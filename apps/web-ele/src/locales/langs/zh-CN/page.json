@@ -1,0 +1,51 @@
+{
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "codeLogin": "验证码登录",
+    "qrcodeLogin": "二维码登录",
+    "forgetPassword": "忘记密码"
+  },
+  "dashboard": {
+    "title": "概览",
+    "analytics": "分析页",
+    "workspace": "工作台"
+  },
+  "basic": {
+    "title": "基础功能"
+  },
+  "system": {
+    "title": "系统管理",
+    "user": "用户管理",
+    "role": "角色管理",
+    "administrator": "管理员管理"
+  },
+  "procurement": {
+    "title": "采购系统",
+    "material": "物料信息管理",
+    "materialCode": "物料代号管理",
+    "name": "物料名称",
+    "code": "代号"
+  },
+  "sales": {
+    "title": "销售系统",
+    "contract": "合同管理",
+    "salesManage": "销售管理"
+  },
+  "warehouse": {
+    "title": "仓库管理",
+    "into": "采购入库",
+    "out": "销售出库"
+  },
+  "finance": {
+    "title": "财务系统",
+    "receivables": "收款登记表",
+    "payment": "付款登记表",
+    "invoice": "发票登记表",
+    "customer": "客户对账",
+    "supplier": "供应商对账"
+  },
+  "warning": {
+    "title": "预警信息"
+  }
+}
