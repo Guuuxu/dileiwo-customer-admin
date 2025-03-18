@@ -1,9 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import { yesOrNoOption } from '#/views/dict' 
-// 输入确认
-const handleEnterInput = () => {
-  console.log('handleEnterInput', '确认了');
-};
+
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
  */
@@ -45,6 +42,10 @@ export function useSchema(): VbenFormSchema[] {
   ];
 }
 
+// 输入确认
+const handleEnterInput = (val: string) => {
+  console.log('handleEnterInput', '确认了');
+};
 export function useSchemaScan(): VbenFormSchema[] {
   return [
     {
@@ -53,12 +54,12 @@ export function useSchemaScan(): VbenFormSchema[] {
         placeholder: '请输入',
         onKeyup(e: any) {
           if (e.key === 'Enter') {
-            handleEnterInput();
+            handleEnterInput((e.target as HTMLInputElement).value);
           }
         },
       },
       fieldName: 'category',
-      label: '请扫码损坏品包装编码',
+      label: '请扫描损坏品包装编码',
       labelWidth: 150, // 设置label宽度
       rules: 'required',
     },

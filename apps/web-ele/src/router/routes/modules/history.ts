@@ -5,12 +5,12 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: 'carbon:shopping-catalog',
       order: 5000,
-      title: '库存管理',
+      title: '使用记录',
     },
-    name: 'inventory',
-    path: '/inventory',
+    name: 'history',
+    path: '/history',
 
-    component: () => import('#/views/inventory/index.vue'),
+    component: () => import('#/views/history/index.vue'),
   },
 ];
 

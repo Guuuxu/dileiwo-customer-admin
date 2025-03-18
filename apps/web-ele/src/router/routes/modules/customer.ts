@@ -6,6 +6,7 @@ const routes: RouteRecordRaw[] = [
       icon: 'carbon:shopping-catalog',
       order: 6000,
       title: '客户管理',
+      hideInMenu: true,
     },
     name: 'customer',
     path: '/customer',

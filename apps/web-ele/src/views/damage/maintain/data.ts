@@ -13,7 +13,7 @@ export function useSchema(): VbenFormSchema[] {
         placeholder: '请输入',
       },
       fieldName: 'category',
-      label: '请扫码损坏品包装编码',
+      label: '请扫描损坏品包装编码',
       labelWidth: 150, // 设置label宽度
       rules: 'required',
     },

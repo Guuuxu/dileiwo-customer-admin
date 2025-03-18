@@ -169,15 +169,15 @@ const handleAdd = () => {
 function handleEditRow(row: RowType) {
   handleSetData(row,'编辑');
 }
-const handleDeliveryRow = ()=>{
-  ElMessage.warning('功能待开发！')
+const handleDeliveryRow = (row: RowType)=>{
+  handleSetData(row,'出库');
 }
 
 
 const handleSetData = (row: RowType, title: string) => {
   drawerApi
     .setData({
-      values: { ...row },
+      values: { ...row, type: title },
     }).setState({
       title
     })

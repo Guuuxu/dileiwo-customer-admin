@@ -21,7 +21,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
 
 const [Drawer, drawerApi] = useVbenDrawer({
   class: 'w-[700px]',
-  confirmText:'导出',
+  footer: false,
   onCancel() {
     drawerApi.close();
   },

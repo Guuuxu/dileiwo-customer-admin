@@ -18,7 +18,26 @@ export function useSchema(): VbenFormSchema[] {
       },
       fieldName: 'reason',
       label: '损坏原因',
+      labelWidth: 120, // 设置label宽度
       rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'remark',
+      labelWidth: 120, // 设置label宽度
+      componentProps: {
+        type: 'textarea',
+        rows: '3',
+        placeholder: '请输入损坏情况',
+      },
+      label: '',
+      dependencies: {
+        if(values) {
+          return values.reason == '7'; // 通过Dom控制销毁
+        },
+        // 只有指定的字段改变时，才会触发
+        triggerFields: ['reason'],
+      },
     },
     {
       component: 'Upload',
@@ -55,7 +74,51 @@ export function useSchema(): VbenFormSchema[] {
         },
       },
       fieldName: 'photo',
-      label: '损坏照片',
+      label: '包装整体含编码图',
+      labelWidth: 120, // 设置label宽度
+      renderComponentContent: () => {
+        return {
+          default: () => '+',
+        };
+      },
+    },
+    {
+      component: 'Upload',
+      componentProps: {
+        placeholder: '请上传文件',
+        class: 'avatar-uploader',
+        action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+        accept: 'image/*',
+        listType: 'picture-card',
+        multiple: true,
+        showUploadList: false,
+        beforeUpload: (file: File) => {
+          console.log(file);
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isGIF = file.type === 'image/gif';
+
+          if (!isJPG && !isPNG && !isGIF) {
+            ElMessage.error({
+              message: $t('ui.formRules.fileTypeError'),
+            });
+          }
+          return isJPG || isPNG || isGIF;
+        },
+        handleAvatarSuccess: (res: any, file: File) => {
+          console.log(res, file);
+          if (res.code === 0) {
+            // globalShareState.set('avatarUrl', res.data.url);
+          } else {
+            ElMessage.error({
+              message: $t('ui.formRules.fileUploadError'),
+            });
+          }
+        },
+      },
+      fieldName: 'photo2',
+      labelWidth: 120, // 设置label宽度
+      label: '包装瑕疵细部图',
       renderComponentContent: () => {
         return {
           default: () => '+',

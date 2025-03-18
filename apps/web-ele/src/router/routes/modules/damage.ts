@@ -12,24 +12,24 @@ const routes: RouteRecordRaw[] = [
 
     children: [
       {
-        name: 'damage.verification',
-        path: '/damage/verification',
-        component: () => import('#/views/damage/verification/index.vue'),
-        meta: {
-          icon: 'lucide:shopping-bag',
-          title: '待验证',
-        },
-      },
-
-      {
-        name: 'damage.maintain',
-        path: '/damage/maintain',
+        name: 'damage.dispose',
+        path: '/damage/dispose',
         component: () => import('#/views/damage/maintain/index.vue'),
         meta: {
           icon: 'lucide:file-code',
-          title: '待维修',
+          title: '待处理',
         },
       },
+      {
+        name: 'damage.submit',
+        path: '/damage/submit',
+        component: () => import('#/views/damage/submit/index.vue'),
+        meta: {
+          icon: 'lucide:shopping-bag',
+          title: '已提交',
+        },
+      },
+
       
     ],
   },

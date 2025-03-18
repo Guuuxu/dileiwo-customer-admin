@@ -9,13 +9,18 @@ defineOptions({
   name: 'FormDrawer',
 });
 
+import { useSchema, useSchemaScan } from './data';
 const [BaseForm, BaseFormApi] = useVbenForm({
   schema: useSchema(),
   showDefaultActions: false,
 });
 
-import { useSchema } from './data';
-
+const type = ref(''); //
+const [ScanForm, ScanFormApi] = useVbenForm({
+  schema: useSchemaScan(),
+  layout: 'vertical',
+  showDefaultActions: false,
+});
 const [Drawer, drawerApi] = useVbenDrawer({
   onCancel() {
     drawerApi.close();
@@ -27,6 +32,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen: boolean) {
     if (isOpen) {
       const { values } = drawerApi.getData<Record<string, any>>();
+        type.value = values.type;
+      console.log(values);
       if (values) {
         BaseFormApi.setValues({
           ...values,
@@ -45,7 +52,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 </script>
 <template>
   <Drawer>
-    <BaseForm />
+    <ScanForm v-if="type === '出库'" />
+    <BaseForm v-else />
   </Drawer>
 </template>
 <style lang="scss" scoped>
