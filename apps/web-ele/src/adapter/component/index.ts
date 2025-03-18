@@ -33,6 +33,7 @@ import {
   ElTreeSelect,
   ElUpload,
   ElImage,
+  ElCascader
 } from 'element-plus';
 
 const withDefaultPlaceholder = <T extends Component>(
@@ -69,6 +70,7 @@ export type ComponentType =
   | 'Upload'
   | 'Image'
   | 'Span'
+  | 'Cascader'
   | BaseFormComponentType;
 
 async function initComponentAdapter() {
@@ -233,6 +235,7 @@ async function initComponentAdapter() {
       );
     },
     Image: ElImage,
+    Cascader: withDefaultPlaceholder(ElCascader,'select'),
     Span: (props, { attrs, slots }) => {
       console.log('Span', props, slots);
       return h(

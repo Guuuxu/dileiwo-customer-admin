@@ -43,7 +43,6 @@ import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 
 import { Plus } from '@vben/icons';
 import Edit from './edit.vue';
-import CouponDrawer from './modules/coupon-drawer.vue';
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Edit,
 });
@@ -72,7 +71,7 @@ const [Form, formApi] = useVbenForm({
   resetButtonOptions: { show: false },
   submitButtonOptions: { show: false },
   // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
-  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2',
+  wrapperClass: 'grid-cols-1 md:grid-cols-3',
   handleSubmit: (values) => {
     ElMessage.success(`表单数据：${JSON.stringify(values)}`);
   },
@@ -81,7 +80,7 @@ const [Form, formApi] = useVbenForm({
       component: 'Upload',
       fieldName: 'enterpriseLogo',
       label: '企业图示',
-      formItemClass: 'row-span-4',
+      formItemClass: 'row-span-2',
       componentProps: {
       },
     },
@@ -113,7 +112,7 @@ const [Form, formApi] = useVbenForm({
     {
           component: 'Divider',
           fieldName: '_divider',
-          formItemClass: 'col-span-2',
+          formItemClass: 'col-span-3',
           hideLabel: true,
           renderComponentContent: () => {
             return {
