@@ -11,6 +11,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { getAuthNewListApi } from '#/api';
 import { $t } from '#/locales';
 
 import Edit from './edit.vue';
@@ -38,9 +39,8 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'type',
+      fieldName: 'type_name',
       label: '型号',
-      componentProps: {},
     },
   ],
 });
@@ -56,15 +56,15 @@ function handleReset() {
 interface RowType {
   id: number;
   createTime: string;
-  type: string;
-  amount: string;
+  type_name: string;
+  total_count: string;
   remark: string;
 }
 const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
-    { field: 'type', title: '型号' },
-    { field: 'amount', title: '数量' },
+    { field: 'type_name', title: '型号' },
+    { field: 'total_count', title: '数量' },
     { field: 'createTime', title: '出货日期' },
     { field: 'remark', title: '备注' },
     // { field: 'status', title: '状态', slots: { default: 'status' } },
@@ -88,16 +88,17 @@ const gridOptions: VxeGridProps<RowType> = {
     trigger: 'click',
   },
   pagerConfig: {},
-  // proxyConfig: {
-  //   ajax: {
-  //     query: async ({ page }) => {
-  //       return await getExampleTableApi({
-  //         page: page.currentPage,
-  //         pageSize: page.pageSize,
-  //       });
-  //     },
-  //   },
-  // },
+  proxyConfig: {
+    ajax: {
+      query: async ({ page },formValues) => {
+        return await getAuthNewListApi({
+          page: page.currentPage,
+          per_page: page.pageSize,
+          ...formValues,
+        });
+      },
+    },
+  },
 };
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -178,9 +179,6 @@ const handleDeleteRow = (row: RowType) => {
     });
 };
 
-onMounted(() => {
-  loadList(6);
-});
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">

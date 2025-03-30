@@ -14,7 +14,7 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'customer',
+      fieldName: 'name',
       label: '客户',
       rules: 'required',
     },
@@ -23,7 +23,7 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'receiver',
+      fieldName: 'receive_person',
       label: '收货人',
       rules: 'required',
     },
@@ -32,7 +32,7 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'contact',
+      fieldName: 'receive_phone',
       label: '联系电话',
       rules: 'required',
     },
@@ -41,7 +41,7 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'address',
+      fieldName: 'receive_address',
       label: '收货地址',
       rules: 'required',
     },
@@ -66,22 +66,7 @@ const handleEnterInput = () => {
  */
 export function useSchemaScan(): VbenFormSchema[] {
   return [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入',
-        onKeyup(e: KeyboardEvent) {
-          if (e.key === 'Enter') {
-            // 如果按下回车键，调用 handleEnterInput 函数
-            handleEnterInput();
-          }
-        },
-      },
-      fieldName: 'category',
-      label: '请扫描包装编码',
-      // 设置标签的宽度为 150 像素
-      labelWidth: 150, 
-    },
+    
   ];
 }
 

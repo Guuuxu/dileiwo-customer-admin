@@ -45,6 +45,7 @@ import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {getAdminUserListApi,deleteAdminUserApi} from '#/api'
 
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 import Edit from './edit.vue';
@@ -52,7 +53,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   connectedComponent: Edit,
 });
 
-import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
+import { ElButton, ElCard, ElMessage, ElTag ,ElMessageBox} from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { $t } from '#/locales';
@@ -120,7 +121,16 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     { field: 'id', title: 'ID' },
     { field: 'name', title: '姓名' },
-    { field: 'role', title: '角色' },
+    { field: 'type', title: '角色',cellRender:{
+      name: 'CellSelectLabel',
+      props: {
+        options: [
+          { label: '管理员', value: 1 },
+          { label: '操作员', value: 2 },
+          { label: '代工厂', value: 3 },
+        ],
+      },
+    }  },
     { field: 'phone', title: '手机号' },
     { field: 'status', title: '状态', slots: { default: 'status' } },
     {
@@ -143,40 +153,20 @@ const gridOptions: VxeGridProps<RowType> = {
     trigger: 'click',
   },
   pagerConfig: {},
-  // proxyConfig: {
-  //   ajax: {
-  //     query: async ({ page }) => {
-  //       return await getExampleTableApi({
-  //         page: page.currentPage,
-  //         pageSize: page.pageSize,
-  //       });
-  //     },
-  //   },
-  // },
+  proxyConfig: {
+    ajax: {
+      query: async ({ page },formValues) => {
+        return await getAdminUserListApi({
+          page: page.currentPage,
+          per_page: page.pageSize,
+          ...formValues
+        });
+      },
+    },
+  },
 };
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 
-// 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        name: '张三',
-        role: '超级管理员',
-        status: 1,
-        phone: '13800138000',
-        remark: '备注一下',
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
 
 // 新增
 const handleAdd = () => {
@@ -210,9 +200,16 @@ const handleSetData = (row: RowType, pageType: string) => {
 
 const handleDeleteRow = (row?: {}) => {
   console.log(`🚀 ~  ~ row:`, row);
+  ElMessageBox.confirm('确认删除此用户吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    await deleteAdminUserApi(row.id);
+    gridApi.reload();
+    ElMessage.success('删除成功');
+  })
 };
 
-onMounted(() => {
-  loadList(2);
-});
+
 </script>

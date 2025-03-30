@@ -2,21 +2,52 @@
 import { onMounted, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
-
+import type { VxeGridProps } from '#/adapter/vxe-table';
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 
 import { useSchema, useSchemaReason } from './data';
+import { ElMessage } from 'element-plus';
+import { scanOutboundBarcode } from '#/api';
 
 defineOptions({
   name: 'FormDrawer',
 });
 const step = ref('0');
 const [BaseForm, BaseFormApi] = useVbenForm({
-  schema: useSchema(),
+  schema: [
+  {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入',
+        onKeyup(e: KeyboardEvent) {
+          if (e.key === 'Enter') {
+            // 如果按下回车键，调用 handleEnterInput 函数
+            handleEnterInput();
+          }
+        },
+      },
+      fieldName: 'code',
+      label: '请扫描损坏品包装编码',
+      labelWidth: 150, // 设置label宽度
+      rules: 'required',
+    },
+  ],
   layout: 'vertical',
   showDefaultActions: false,
 });
+// 输入确认
+const handleEnterInput = async () => {
+  const formValues = await BaseFormApi.getValues()
+  console.log('handleEnterInput',formValues );
+  // const res = await scanOutboundBarcode(row.value.id,formValues.code)
+    ElMessage.success('操作完成！')
+    step.value = '1'
+    BaseFormApi.setValues({
+      ...formValues,
+      code: '',
+    })
+};
 
 const [BaseForm2, BaseFormApi2] = useVbenForm({
   schema: useSchemaReason(),
@@ -30,8 +61,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onConfirm: async () => {
     if (step.value === '0') {
-      await BaseFormApi.submitForm();
-      step.value = '1';
+      const formValues = await BaseFormApi.getValues()
+      console.log(formValues)
+      if(!formValues.code) ElMessage.warning('请先扫描包装编码');
     } else {
       drawerApi.close();
     }
@@ -81,7 +113,7 @@ const gridOptions: VxeGridProps<RowType> = {
   //     query: async ({ page }) => {
   //       return await getExampleTableApi({
   //         page: page.currentPage,
-  //         pageSize: page.pageSize,
+  //         per_page: page.pageSize,
   //       });
   //     },
   //   },

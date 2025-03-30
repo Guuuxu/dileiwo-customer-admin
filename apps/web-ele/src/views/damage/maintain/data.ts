@@ -1,22 +1,15 @@
 import type { VbenFormSchema } from '#/adapter/form';
 
 import { damageReasons } from '#/views/dict';
+import { $t } from '#/locales';
+import { ElMessage } from 'element-plus';
 
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
  */
 export function useSchema(): VbenFormSchema[] {
   return [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入',
-      },
-      fieldName: 'category',
-      label: '请扫描损坏品包装编码',
-      labelWidth: 150, // 设置label宽度
-      rules: 'required',
-    },
+    
   ];
 }
 
@@ -52,6 +45,92 @@ export function useSchemaReason(): VbenFormSchema[] {
         triggerFields: ['reason'],
       },
     },
+    {
+          component: 'Upload',
+          componentProps: {
+            placeholder: '请上传文件',
+            class: 'avatar-uploader',
+            action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+            accept: 'image/*',
+            listType: 'picture-card',
+            multiple: true,
+            showUploadList: false,
+            beforeUpload: (file: File) => {
+              console.log(file);
+              const isJPG = file.type === 'image/jpeg';
+              const isPNG = file.type === 'image/png';
+              const isGIF = file.type === 'image/gif';
+    
+              if (!isJPG && !isPNG && !isGIF) {
+                ElMessage.error({
+                  message: $t('ui.formRules.fileTypeError'),
+                });
+              }
+              return isJPG || isPNG || isGIF;
+            },
+            handleAvatarSuccess: (res: any, file: File) => {
+              console.log(res, file);
+              if (res.code === 0) {
+                // globalShareState.set('avatarUrl', res.data.url);
+              } else {
+                ElMessage.error({
+                  message: $t('ui.formRules.fileUploadError'),
+                });
+              }
+            },
+          },
+          fieldName: 'photo',
+          label: '包装整体含编码图',
+          labelWidth: 120, // 设置label宽度
+          renderComponentContent: () => {
+            return {
+              default: () => '+',
+            };
+          },
+        },
+    {
+          component: 'Upload',
+          componentProps: {
+            placeholder: '请上传文件',
+            class: 'avatar-uploader',
+            action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+            accept: 'image/*',
+            listType: 'picture-card',
+            multiple: true,
+            showUploadList: false,
+            beforeUpload: (file: File) => {
+              console.log(file);
+              const isJPG = file.type === 'image/jpeg';
+              const isPNG = file.type === 'image/png';
+              const isGIF = file.type === 'image/gif';
+    
+              if (!isJPG && !isPNG && !isGIF) {
+                ElMessage.error({
+                  message: $t('ui.formRules.fileTypeError'),
+                });
+              }
+              return isJPG || isPNG || isGIF;
+            },
+            handleAvatarSuccess: (res: any, file: File) => {
+              console.log(res, file);
+              if (res.code === 0) {
+                // globalShareState.set('avatarUrl', res.data.url);
+              } else {
+                ElMessage.error({
+                  message: $t('ui.formRules.fileUploadError'),
+                });
+              }
+            },
+          },
+          fieldName: 'photo2',
+          labelWidth: 120, // 设置label宽度
+          label: '包装瑕疵细部图',
+          renderComponentContent: () => {
+            return {
+              default: () => '+',
+            };
+          },
+        },
   ];
 }
 

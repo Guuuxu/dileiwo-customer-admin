@@ -4,7 +4,7 @@ export namespace DemoTableApi {
   export interface PageFetchParams {
     [key: string]: any;
     page: number;
-    pageSize: number;
+    per_page: number;
   }
 }
 

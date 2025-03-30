@@ -12,6 +12,7 @@ import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
+import { handleScan } from '#/api';
 
 
 const router = useRouter();
@@ -26,41 +27,169 @@ const [Form, formApi] = useVbenForm({
   resetButtonOptions: { show: false },
   submitButtonOptions: { show: false },
   // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
-  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  wrapperClass: 'grid-cols-2',
   handleSubmit: (values) => {
-    
+    ElMessage.success(`表单数据：${JSON.stringify(values)}`);
   },
   schema: [
     {
       component: 'Input',
-      fieldName: 'code',
+      fieldName: 'detail_no',
       label: '回收包装编码',
       componentProps: {
-        onKeyup(e: KeyboardEvent) {
+        placeholder: '请输入',
+        onKeyup(e: any) {
           if (e.key === 'Enter') {
-            // 如果按下回车键，调用 handleEnterInput 函数
-            handleEnterInput((e.target as HTMLInputElement).value);
+            handleEnterInput();
           }
-        
         },
       },
     },
   ],
 });
-
-const codeList = ref<string[]>([]);
 // 输入确认
-const handleEnterInput = (val: string) => {
-  console.log('handleEnterInput', val);
-  codeList.value.push(val)
-  setTimeout(() => {
-    formApi.resetForm();
-  },1500)
+const handleEnterInput = async () => {
+  const formValues = await formApi.getValues();
+  console.log('handleEnterInput', formValues);
+  const data = {
+    type: 1,
+    detail_no: formValues.detail_no,
+  };
+  console.log('handleEnterInput', data);
+  const res = await handleScan(data);
+  ElMessage.success('回收完成！');
 };
 
-const handleFinishScan = () => {
-  ElMessage.success('回收复查完成');
+// 表格配置
+interface RowType {
+  id: number;
+  created_at: string;
+  category: string;
+  days: string;
+  times: string;
+  remark: string;
 }
+const dataList: any = ref([]);
+const gridOptions: VxeGridProps<RowType> = {
+  columns: [
+    // { align: 'left', title: '', type: 'checkbox', width: 40 },
+    { field: 'category', title: '型号' },
+    { field: 'amount', title: '数量' },
+    { field: 'days', title: '租赁天数', },
+    { field: 'times', title: '单月循环次数', },
+    { field: 'created_at', title: '出货日期', },
+    { field: 'remark', title: '备注', },
+    // { field: 'status', title: '状态', slots: { default: 'status' } },
+    {
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      title: '操作',
+      width: 150,
+    },
+  ],
+  data: dataList.value,
+  height: 'auto',
+  scrollY: {
+    enabled: true,
+    gt: 0,
+  },
+  showOverflow: true,
+  editConfig: {
+    mode: 'row',
+    trigger: 'click',
+  },
+  pagerConfig: {},
+  // proxyConfig: {
+  //   ajax: {
+  //     query: async ({ page }) => {
+  //       return await getExampleTableApi({
+  //         page: page.currentPage,
+  //         per_page: page.pageSize,
+  //       });
+  //     },
+  //   },
+  // },
+};
+const formOptions: VbenFormProps = {
+  // 默认展开
+  collapsed: false,
+  fieldMappingTime: [['date', ['start', 'end']]],
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'customer',
+      label: '客户',
+    },
+    {
+      component: 'Input',
+      fieldName: 'customer',
+      label: '出库单号',
+    },
+    {
+      component: 'Select',
+      fieldName: 'type',
+      label: '出货类型',
+      componentProps:{
+        options: [
+          { label: '租赁', value: '1' },
+          { label: '购买', value: '2' },
+        ],
+      }
+    },
+
+  ],
+  // 控制表单是否显示折叠按钮
+  showCollapseButton: true,
+  // 是否在字段值改变时提交表单
+  submitOnChange: true,
+  // 按下回车时是否提交表单
+  submitOnEnter: false,
+};
+const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
+
+// 新增
+const handleAdd = () => {
+  handleSetData({},'新增');
+};
+// 编辑
+function handleEditRow(row: RowType) {
+  ElMessage.warning('功能待开发！')
+}
+
+
+const handleSetData = (row: RowType, title: string) => {
+  drawerApi
+    .setData({
+      values: { ...row },
+    }).setState({
+      title
+    })
+    .open();
+};
+
+import { ElMessageBox } from 'element-plus';
+const handleDeleteRow = (row: RowType) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除该条记录, 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(() => {
+    // Perform delete operation here
+    // const index = dataList.value.findIndex((item: { id: number; }) => item.id === row.id);
+    // if (index !== -1) {
+    //   dataList.value.splice(index, 1);
+    //   ElMessage.success('删除成功');
+    // }
+    ElMessage.success('删除成功');
+  }).catch(() => {
+    ElMessage.info('已取消删除');
+  });
+};
 
 
 </script>
@@ -69,7 +198,7 @@ const handleFinishScan = () => {
     <ElCard>
       <Form></Form>
       <template #footer>
-        <div class="text-right"><VbenButton @click="handleFinishScan()">结束扫描</VbenButton></div>
+        <div class="text-right"><VbenButton>结束扫描</VbenButton></div>
       </template>
     </ElCard>
   </Page>

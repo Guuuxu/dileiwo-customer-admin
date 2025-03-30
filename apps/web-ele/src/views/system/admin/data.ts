@@ -29,7 +29,7 @@ export function useSchema(): VbenFormSchema[] {
           { label: '代工厂', value: 3 },
         ],
       },
-      fieldName: 'role',
+      fieldName: 'type',
       label: '角色',
       rules: 'required',
     },
@@ -48,7 +48,7 @@ export function useSchema(): VbenFormSchema[] {
         placeholder: '请输入',
         type: 'number'
       },
-      fieldName: 'validCode',
+      fieldName: 'code',
       label: '验证码',
       rules: 'required',
     },

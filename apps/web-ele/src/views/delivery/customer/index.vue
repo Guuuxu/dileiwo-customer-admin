@@ -7,11 +7,12 @@ import { useRouter } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 
-import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
+import { ElButton, ElCard, ElMessage, ElTag,ElMessageBox } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
+import { getCustomerList,deleteCustomer } from '#/api';
 
 import Edit from './edit.vue';
 
@@ -20,37 +21,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const router = useRouter();
-const [Form, formApi] = useVbenForm({
-  commonConfig: {
-    // 所有表单项
-    componentProps: {
-      class: 'w-full',
-    },
-  },
-  layout: 'horizontal',
-  resetButtonOptions: { show: false },
-  submitButtonOptions: { show: false },
-  // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
-  wrapperClass: 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
-  handleSubmit: (values) => {
-    ElMessage.success(`表单数据：${JSON.stringify(values)}`);
-  },
-  schema: [
-    {
-      component: 'Input',
-      fieldName: 'name',
-      label: '项目名称',
-      componentProps: {},
-    },
-  ],
-});
 
-function handleSearch() {
-  formApi.getValues();
-}
-function handleReset() {
-  formApi.resetForm();
-}
+
+
 
 // 表格配置
 interface RowType {
@@ -65,10 +38,10 @@ const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
-    { field: 'customer', title: '客户' },
-    { field: 'receiver', title: '收货人' },
-    { field: 'contact', title: '联系电话', },
-    { field: 'address', title: '收货地址', },
+    { field: 'name', title: '客户' },
+    { field: 'receive_person', title: '收货人' },
+    { field: 'receive_phone', title: '联系电话', },
+    { field: 'register_address', title: '收货地址', },
     { field: 'remark', title: '备注', },
     // { field: 'status', title: '状态', slots: { default: 'status' } },
     {
@@ -91,30 +64,31 @@ const gridOptions: VxeGridProps<RowType> = {
     trigger: 'click',
   },
   pagerConfig: {},
-  // proxyConfig: {
-  //   ajax: {
-  //     query: async ({ page }) => {
-  //       return await getExampleTableApi({
-  //         page: page.currentPage,
-  //         pageSize: page.pageSize,
-  //       });
-  //     },
-  //   },
-  // },
+  proxyConfig: {
+    ajax: {
+      query: async ({ page },formValues) => {
+        return await getCustomerList({
+          page: page.currentPage,
+          per_page: page.pageSize,
+          ...formValues,
+        });
+      },
+    },
+  },
 };
 const formOptions: VbenFormProps = {
   // 默认展开
   collapsed: false,
-  fieldMappingTime: [['date', ['start', 'end']]],
+  // fieldMappingTime: [['date', ['start', 'end']]],
   schema: [
     {
       component: 'Input',
-      fieldName: 'customer',
+      fieldName: 'name',
       label: '客户',
     },
     {
       component: 'Input',
-      fieldName: 'customer',
+      fieldName: 'order',
       label: '出库单号',
     },
     {
@@ -139,27 +113,6 @@ const formOptions: VbenFormProps = {
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
-// 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        customer: '欢庆有限公司',
-        receiver: '张三',
-        contact: '13500000009',
-        address: '新竹市',
-        remark: '备注一下',
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
 
 // 新增
 const handleAdd = () => {
@@ -184,32 +137,27 @@ const handleSetData = (row: RowType, title: string) => {
     .open();
 };
 
-import { ElMessageBox } from 'element-plus';
 const handleDeleteRow = (row: RowType) => {
   ElMessageBox.confirm(
-    '此操作将永久删除该条记录, 是否继续?',
+    '确认删除此客户数据?',
     '提示',
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
     }
-  ).then(() => {
-    // Perform delete operation here
-    // const index = dataList.value.findIndex((item: { id: number; }) => item.id === row.id);
-    // if (index !== -1) {
-    //   dataList.value.splice(index, 1);
-    //   ElMessage.success('删除成功');
-    // }
+  ).then(async () => {
+    await deleteCustomer(row.id);
     ElMessage.success('删除成功');
+    gridApi.query();
   }).catch(() => {
     ElMessage.info('已取消删除');
   });
 };
+const handleUpdate = ()=>{
+  gridApi.reload();
+}
 
-onMounted(() => {
-  loadList(6);
-});
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
@@ -236,6 +184,6 @@ onMounted(() => {
             </template>
           </Grid>
 
-    <Drawer />
+    <Drawer @onUpdated="handleUpdate" />
   </Page>
 </template>

@@ -135,7 +135,7 @@ export const errorMessageResponseInterceptor = (
 
       switch (status) {
         case 400: {
-          errorMessage = $t('ui.fallback.http.badRequest');
+          errorMessage = error?.data?.msg;
           break;
         }
         case 401: {
@@ -155,7 +155,7 @@ export const errorMessageResponseInterceptor = (
           break;
         }
         default: {
-          errorMessage = $t('ui.fallback.http.internalServerError');
+          errorMessage = error?.data?.msg;
         }
       }
       makeErrorMessage?.(errorMessage, error);

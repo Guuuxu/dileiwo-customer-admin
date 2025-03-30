@@ -3,12 +3,16 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
 import { computed, ref } from 'vue';
-import { useAuthStore } from '#/store';
+
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
+import { useAuthStore } from '#/store';
+import { sendSmsApi } from '#/api';
 import { $t } from '@vben/locales';
+import { ElMessage } from 'element-plus';
 
 defineOptions({ name: 'CodeLogin' });
 const authStore = useAuthStore();
+
 const loading = ref(false);
 const CODE_LENGTH = 6;
 
@@ -19,8 +23,9 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {
         placeholder: $t('authentication.mobile'),
       },
-      fieldName: 'phoneNumber',
+      fieldName: 'phone',
       label: $t('authentication.mobile'),
+      defaultValue: '13800000000',
       rules: z
         .string()
         .min(1, { message: $t('authentication.mobileTip') })
@@ -39,6 +44,22 @@ const formSchema = computed((): VbenFormSchema[] => {
               : $t('authentication.sendCode');
           return text;
         },
+        handleSendCode: async () => {
+          // 模拟发送验证码
+          // Simulate sending verification code
+          loading.value = true;
+          const phone = formSchema.value.find((item) => item.fieldName === 'phone')?.defaultValue;
+          console.log('Current phone number:', phone);
+          try {
+            await sendSmsApi(phone)
+            ElMessage.success('已发送');
+            loading.value = false;
+          }catch (error) {
+            loading.value = false;
+            console.error('Error sending verification code:', error);
+          }
+        },
+        defaultValue: '123456',
         placeholder: $t('authentication.code'),
       },
       fieldName: 'code',
@@ -57,19 +78,14 @@ const formSchema = computed((): VbenFormSchema[] => {
 async function handleLogin(values: Recordable<any>) {
   // eslint-disable-next-line no-console
   console.log(values);
-  
+
 }
 </script>
 
 <template>
-  <!-- <AuthenticationCodeLogin
-    :form-schema="formSchema"
-    :loading="loading"
-    @submit="handleLogin"
-  /> -->
   <AuthenticationCodeLogin
     :form-schema="formSchema"
-    :loading="loading"
-    @submit="handleLogin"
+    :loading="authStore.loginLoading"
+    @submit="authStore.authLogin"
   />
 </template>

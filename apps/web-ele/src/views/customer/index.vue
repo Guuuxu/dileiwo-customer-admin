@@ -11,6 +11,7 @@ import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { getCustomerList } from '#/api';
 import { $t } from '#/locales';
 
 import Edit from './edit.vue';
@@ -59,16 +60,17 @@ const gridOptions: VxeGridProps<RowType> = {
     trigger: 'click',
   },
   pagerConfig: {},
-  // proxyConfig: {
-  //   ajax: {
-  //     query: async ({ page }) => {
-  //       return await getExampleTableApi({
-  //         page: page.currentPage,
-  //         pageSize: page.pageSize,
-  //       });
-  //     },
-  //   },
-  // },
+  proxyConfig: {
+    ajax: {
+      query: async ({ page }, formValues) => {
+        return await getCustomerList({
+          page: page.currentPage,
+          per_page: page.pageSize,
+          ...formValues,
+        });
+      },
+    },
+  },
 };
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -77,7 +79,7 @@ const formOptions: VbenFormProps = {
   schema: [
     {
       component: 'Input',
-      fieldName: 'customer',
+      fieldName: 'client',
       label: '客户',
       componentProps: {
         placeholder: '请输入客户名称、客户编号'
@@ -94,33 +96,6 @@ const formOptions: VbenFormProps = {
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
-// 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        customer:'长吉有限公司',
-        code: '00002' + i,
-        tel: '020-99290029',
-        phone: '13500000000',
-        contact: '张三',
-        person: '李四',
-        address: '江苏',
-        contactAddress: '中山路1号',
-        consignee: '刘京东',
-        consigneePhone:'13899999999',
-        consigneeAddress: '钟楼'
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
 
 // 新增
 const handleAdd = () => {
@@ -169,9 +144,6 @@ const handleDeleteRow = (row: RowType) => {
   });
 };
 
-onMounted(() => {
-  loadList(6);
-});
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">

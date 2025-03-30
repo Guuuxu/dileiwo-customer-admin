@@ -23,9 +23,9 @@ setupVbenVxeTable({
         proxyConfig: {
           autoLoad: true,
           response: {
-            result: 'items',
-            total: 'total',
-            list: 'items',
+            result: 'list',
+            total: 'total_count',
+            list: 'list',
           },
           showActiveMsg: true,
           showResponseMsg: false,
