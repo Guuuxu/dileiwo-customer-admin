@@ -1,17 +1,18 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
-
+import { useRouter } from 'vue-router';
 import { computed, ref } from 'vue';
 
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
 import { useAuthStore } from '#/store';
 import { sendSmsApi } from '#/api';
 import { $t } from '@vben/locales';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElButton } from 'element-plus';
 
 defineOptions({ name: 'CodeLogin' });
 const authStore = useAuthStore();
+const router = useRouter();
 
 const loading = ref(false);
 const CODE_LENGTH = 6;
@@ -80,6 +81,9 @@ async function handleLogin(values: Recordable<any>) {
   console.log(values);
 
 }
+const goReg = ()=>{
+  router.push('/auth/register');
+}
 </script>
 
 <template>
@@ -88,4 +92,7 @@ async function handleLogin(values: Recordable<any>) {
     :loading="authStore.loginLoading"
     @submit="authStore.authLogin"
   />
+  <div  class="w-full mt-3 text-right" type="primary" @click="goReg()">
+    新商户注册
+  </div>
 </template>

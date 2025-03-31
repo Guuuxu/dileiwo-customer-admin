@@ -43,6 +43,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
+import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {getAdminUserListApi,deleteAdminUserApi} from '#/api'
@@ -55,55 +56,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
 import { ElButton, ElCard, ElMessage, ElTag ,ElMessageBox} from 'element-plus';
 
-import { useVbenForm } from '#/adapter/form';
 import { $t } from '#/locales';
 
 const router = useRouter();
-const [Form, formApi] = useVbenForm({
-  commonConfig: {
-    // 所有表单项
-    componentProps: {
-      class: 'w-full',
-    },
-  },
-  layout: 'horizontal',
-  resetButtonOptions: { show: false },
-  submitButtonOptions: { show: false },
-  // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
-  wrapperClass: 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
-  handleSubmit: (values) => {
-    ElMessage.success(`表单数据：${JSON.stringify(values)}`);
-  },
-  schema: [
-    {
-      component: 'Input',
-      fieldName: 'name',
-      label: '用户',
-      componentProps: {
-        placeholder: '请输入用户ID/昵称/手机号',
-      },
-    },
-    {
-      component: 'Select',
-      fieldName: 'role',
-      label: '角色',
-      componentProps: {
-        options: [
-        { label: '管理员', value: 1 },
-          { label: '操作员', value: 2 },
-          { label: '代工厂', value: 3 },
-        ],
-      },
-    },
-  ],
-});
-
-function handleSearch() {
-  formApi.getValues();
-}
-function handleReset() {
-  formApi.resetForm();
-}
 
 // 表格配置
 import type { AdminInfo } from '@vben/types';
@@ -165,7 +120,39 @@ const gridOptions: VxeGridProps<RowType> = {
     },
   },
 };
-const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
+const formOptions: VbenFormProps = {
+  // 默认展开
+  collapsed: false,
+  schema: [
+  {
+      component: 'Input',
+      fieldName: 'keyword',
+      label: '用户',
+      componentProps: {
+        placeholder: '请输入用户ID/昵称/手机号',
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'type',
+      label: '角色',
+      componentProps: {
+        options: [
+        { label: '管理员', value: 1 },
+          { label: '操作员', value: 2 },
+          { label: '代工厂', value: 3 },
+        ],
+      },
+    },
+  ],
+  // 控制表单是否显示折叠按钮
+  showCollapseButton: true,
+  // 是否在字段值改变时提交表单
+  submitOnChange: true,
+  // 按下回车时是否提交表单
+  submitOnEnter: false,
+};
+const [Grid, gridApi] = useVbenVxeGrid({formOptions, gridOptions });
 
 
 // 新增

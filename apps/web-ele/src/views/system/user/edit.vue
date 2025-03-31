@@ -2,7 +2,7 @@
 import { ref, onMounted, h,useTemplateRef } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 
-import { ElTabs, ElTabPane, ElCard, ElRow, ElCol, ElImage,ElMessage,ElLoading } from 'element-plus';
+import { ElTabs, ElTabPane, ElUpload, ElRow, ElCol, ElImage,ElMessage,ElLoading } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 
 import type { VxeGridProps } from '#/adapter/vxe-table';
@@ -52,7 +52,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         class: 'avatar',
         src: 'https://egclub.nyc3.digitaloceanspaces.com/production/users/avatars/Te5VsbCnuaXRzyRTnu5hKhln6yqtACHqYggVE64t.png', // Add the source URL for the image here
       },
-      fieldName: 'avatar',
+      fieldName: 'enterpriseLogo',
       label: '用户头像',
     },
 
@@ -185,6 +185,12 @@ const activeName = ref('base');
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
 };
+const handleAvatarSuccess = (response: any, file: any) => {
+  console.log(response, file);
+};
+const handleAvatarError = (err: any) => {
+  console.log(err);
+}
 
 const srcList = [
   'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
@@ -192,7 +198,24 @@ const srcList = [
 </script>
 <template>
   <Drawer>
-    <BaseForm> </BaseForm>
+    <BaseForm>
+      <template #enterpriseLogo="{field}">
+            <div class="flex flex-col items-center">
+              <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.avatar" alt="Avatar"> -->
+              <ElUpload
+                class="avatar-uploader"
+                :show-file-list="false"
+                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                :on-success="handleAvatarSuccess"
+                :on-error="handleAvatarError"
+              >
+              <img v-if="field.value" :src="field.value" class="avatar" />
+              <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
+                <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
+              </ElUpload>
+            </div>
+            </template>
+    </BaseForm>
   </Drawer>
 </template>
 <style lang="scss" scoped>
@@ -211,8 +234,8 @@ const srcList = [
 }
 
 ::v-deep .avatar {
-  width: 50px;
-  height: 50px;
+  width: 140px;
+  height: 140px;
   object-fit: cover;
   border-radius: 10px;
 }

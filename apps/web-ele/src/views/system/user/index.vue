@@ -3,20 +3,20 @@
     <ElCard auto-content-height>
       <template #default>
         <Form>
-          <template #enterpriseLogo="{field}">
+          <template #img="{field}">
             <div class="flex flex-col items-center">
-              <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.avatar" alt="Avatar"> -->
-              <ElUpload
+              <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar">
+              <!-- <ElUpload
                 class="avatar-uploader"
                 :show-file-list="false"
                 action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                 :on-success="handleAvatarSuccess"
                 :on-error="handleAvatarError"
-              >
-              <img v-if="field.value" :src="field.value" class="avatar" />
-              <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
+              > -->
+              <!-- <img v-if="field.value" :src="field.value" class="avatar" /> -->
+              <!-- <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon> -->
                 <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
-              </ElUpload>
+              <!-- </ElUpload> -->
             </div>
             </template>
         </Form>
@@ -36,9 +36,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
-import type { VxeGridProps } from '#/adapter/vxe-table';
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-
+import { getAccountInfoApi} from '#/api'
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 
 import { Plus } from '@vben/icons';
@@ -78,35 +76,35 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Upload',
-      fieldName: 'enterpriseLogo',
+      fieldName: 'img',
       label: '企业图示',
       formItemClass: 'row-span-2',
       componentProps: {
       },
     },
     {
-      component: 'Input',
+      component: 'Span',
       fieldName: 'name',
       label: '企业名称',
       componentProps: {
       },
     },
     {
-      component: 'Input',
-      fieldName: 'regNo',
+      component: 'Span',
+      fieldName: 'code',
       label: '企业注册号',
     },
     {
-      component: 'Input',
-      fieldName: 'legalPerson',
+      component: 'Span',
+      fieldName: 'law_person',
       label: '法人',
       componentProps: {
         
       }
     },
     {
-      component: 'Input',
-      fieldName: 'phone',
+      component: 'Span',
+      fieldName: 'link_phone',
       label: '手机号',
     },
     {
@@ -121,18 +119,18 @@ const [Form, formApi] = useVbenForm({
           },
         },
         {
-      component: 'Input',
-      fieldName: 'receivePerson',
+      component: 'Span',
+      fieldName: 'receive_person',
       label: '收货人',
     },
     {
-      component: 'Input',
-      fieldName: 'receivePhone',
+      component: 'Span',
+      fieldName: 'receive_phone',
       label: '手机号',
     },
     {
-      component: 'Input',
-      fieldName: 'receiveAddress',
+      component: 'Span',
+      fieldName: 'receive_address',
       label: '收货地址',
     },
   ],
@@ -148,8 +146,13 @@ const userInfo = ref({
   receivePerson: '李四',
   receiveAddress: '北京市朝阳区',
   receivePhone: '13999999999',
-  enterpriseLogo: 'https://avatars.githubusercontent.com/u/95928385',
+  img: 'https://avatars.githubusercontent.com/u/95928385',
 })
+const init = () => {
+  getAccountInfoApi().then((res: any) => {
+    userInfo.value = res.data;
+  })
+}
 formApi.setValues(userInfo.value);
 
 
@@ -171,6 +174,10 @@ const handleAvatarSuccess = (response: any) => {
 const handleAvatarError = (error: any) => {
   ElMessage.error('上传失败');
 }
+
+onMounted(() => {
+  init();
+})
 </script>
 <style lang="scss" scoped>
   .avatar-uploader .avatar {

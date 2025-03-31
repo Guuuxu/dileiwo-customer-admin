@@ -27,18 +27,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/system/user/index.vue'),
         meta: {
           icon: 'lucide:user-round',
-          title: $t('page.system.user'),
+          title: '账户管理',
         },
       },
-      {
-        name: 'system.role',
-        path: '/system/role',
-        component: () => import('#/views/system/role/index.vue'),
-        meta: {
-          icon: 'mdi:user-tie',
-          title: $t('page.system.role'),
-        },
-      },
+      // {
+      //   name: 'system.role',
+      //   path: '/system/role',
+      //   component: () => import('#/views/system/role/index.vue'),
+      //   meta: {
+      //     icon: 'mdi:user-tie',
+      //     title: $t('page.system.role'),
+      //   },
+      // },
     ],
   },
 ];

@@ -110,8 +110,8 @@ defineExpose({
         {{ submitButtonText || $t('common.login') }}
       </slot>
     </VbenButton>
-    <VbenButton class="mt-4 w-full" variant="outline" @click="goToLogin()">
+    <!-- <VbenButton class="mt-4 w-full" variant="outline" @click="goToLogin()">
       {{ $t('common.back') }}
-    </VbenButton>
+    </VbenButton> -->
   </div>
 </template>

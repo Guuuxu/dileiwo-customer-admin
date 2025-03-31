@@ -29,7 +29,7 @@ export namespace AuthApi {
  */
 
 export async function loginApi(data: AuthApi.LoginParams) {
-  return requestClient.post<AuthApi.LoginResult>('/admin/login', data);
+  return requestClient.post<AuthApi.LoginResult>('/web/login', data);
 }
 
 /**
@@ -45,7 +45,7 @@ export async function refreshTokenApi() {
  * 退出登录
  */
 export async function logoutApi() {
-  return baseRequestClient.post('/admin/logout', {
+  return baseRequestClient.post('/web/logout', {
     withCredentials: true,
   });
 }
@@ -63,7 +63,7 @@ export async function getAccessCodesApi() {
  * @param params 查询参数
  */
 export async function getAuthNewListApi(params: Record<string, any>) {
-  return requestClient.get<string[]>('/admin/bound/inbound/new', { params });
+  return requestClient.get<string[]>('/web/bound/inbound/new', { params });
 }
 
 
@@ -72,7 +72,7 @@ export async function getAuthNewListApi(params: Record<string, any>) {
  * @param params 查询参数
  */
 export async function getAuthRepairListApi(params: Record<string, any>) {
-  return requestClient.get<string[]>('/admin/bound/inbound/repair', { params });
+  return requestClient.get<string[]>('/web/bound/inbound/repair', { params });
 }
 interface scanType {
   id: number; //初始认证id 新品id/维修id/回收时不传
@@ -81,5 +81,5 @@ interface scanType {
 }
 
 export async function handleScan(data: scanType) {
-  return requestClient.post<any>('/admin/bound/inbound/scan', data);
+  return requestClient.post<any>('/web/bound/inbound/scan', data);
 }

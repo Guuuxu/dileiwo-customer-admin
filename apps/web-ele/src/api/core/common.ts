@@ -26,26 +26,32 @@ import { baseRequestClient, requestClient } from '#/api/request';
  * 登录
  */
 export async function handleLogin(data: LoginParams) {
-  return requestClient.post<LoginResult>('/admin/login', data);
+  return requestClient.post<LoginResult>('/web/login', data);
 }
 
 /**
  * 退出登录
  */
 export async function handleLogout() {
-  return requestClient.post<LoginResult>('/admin/logout');
+  return requestClient.post<LoginResult>('/web/logout');
 }
 
+/**
+ * 注册
+ */
+export async function handleRegister(data: any) {
+  return requestClient.post<{ msg: string; code: number }>('/web/register', data);
+}
 /**
  * 发送短信验证码
  */
 export async function sendSmsApi(phone: string) {
-  return baseRequestClient.post<{ msg: string; code: number }>('/admin/sendSMS', { phone });
+  return baseRequestClient.post<{ msg: string; code: number }>('/web/sendSMS', { phone });
 }
 
 /**
  * 获取用户信息
  */
 export async function getUserInfo() {
-  return requestClient.get<LoginResult['data']['user']>('/admin/user');
+  return requestClient.get<LoginResult['data']['user']>('/web/user');
 }
