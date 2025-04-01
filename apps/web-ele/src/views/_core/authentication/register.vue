@@ -3,8 +3,10 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
 import { computed, h, ref } from 'vue';
+import { ElButton,ElMessage } from 'element-plus';
 
 import { AuthenticationRegister, z } from '@vben/common-ui';
+import {handleRegister} from '#/api'
 import { $t } from '@vben/locales';
 const router = useRouter();
 defineOptions({ name: 'Register' });
@@ -23,6 +25,7 @@ const formSchema = computed((): VbenFormSchema[] => {
           { label: '中转使用方', value: 2 },
         ],
       },
+      rules: 'required'
     },
     {
       component: 'Divider',
@@ -39,11 +42,13 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'Input',
       fieldName: 'name',
       label: '企业名称',
+      rules: 'required'
     },
     {
       component: 'Input',
       fieldName: 'code',
       label: '企业注册号',
+      rules: 'required'
     },
     {
       component: 'Input',
@@ -51,7 +56,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       label: '上传登记证（正面）',
     },
     {
-      component: 'VbenInput',
+      component: 'Input',
       componentProps: {
       },
       fieldName: 'law_person',
@@ -62,6 +67,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'Input',
       fieldName: 'law_phone',
       label: '手机号',
+      rules: 'required'
     },
     {
       component: 'VbenPinInput',
@@ -112,7 +118,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
     },
     {
-      component: 'VbenInput',
+      component: 'Input',
       componentProps: {
       },
       fieldName: 'admin_person',
@@ -173,7 +179,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
     },
     {
-      component: 'VbenInput',
+      component: 'Input',
       componentProps: {
       },
       fieldName: 'receive_person',
@@ -219,19 +225,30 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-function handleSubmit(value: Recordable<any>) {
-  // eslint-disable-next-line no-console
-  console.log('register submit:', value);
+async function handleSubmit(value: Recordable<any>) {
+  const values = await BaseFormApi.getValues()
+  console.log('BaseFormApi:', BaseFormApi)
+  console.log('register submit:', values);
+  handleRegister(values).then((res: any) => {
+    ElMessage.success('注册成功');
+    router.replace('/')
+  })
 }
-function goToLogin() {
+const goToLogin =()=> {
   router.push('/auth/code-login');
 }
 </script>
 
 <template>
-  <div>
-    <BaseForm></BaseForm>
-  <div class="mt-4 text-center text-sm">
+  <div class="reg-wrap w-full h-full">
+    <BaseForm>
+      <template #default="{ form, formProps }">
+        <ElButton type="primary" class="reg-title text-center text-3xl font-bold" @click="handleSubmit">
+            注册
+          </ElButton>
+      </template>
+    </BaseForm>
+    <div class="mt-4 text-center text-sm">
       {{ $t('authentication.alreadyHaveAccount') }}
       <span class="vben-link text-sm font-normal" @click="goToLogin()">
         {{ $t('authentication.goToLogin') }}
@@ -239,3 +256,6 @@ function goToLogin() {
     </div>
   </div>
 </template>
+<style scoped>
+
+</style>

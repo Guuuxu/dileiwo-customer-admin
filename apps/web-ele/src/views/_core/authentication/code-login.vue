@@ -87,12 +87,14 @@ const goReg = ()=>{
 </script>
 
 <template>
-  <AuthenticationCodeLogin
+  <div>
+    <AuthenticationCodeLogin
     :form-schema="formSchema"
     :loading="authStore.loginLoading"
     @submit="authStore.authLogin"
   />
   <div  class="w-full mt-3 text-right" type="primary" @click="goReg()">
     新商户注册
+  </div>
   </div>
 </template>
