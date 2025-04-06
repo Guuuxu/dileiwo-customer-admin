@@ -22,14 +22,14 @@ export function useSchemaReason(): VbenFormSchema[] {
         placeholder: '请选择',
         options: damageReasons,
       },
-      fieldName: 'reason',
+      fieldName: 'broken_reason',
       label: '请选择损坏原因',
       labelWidth: 150, // 设置label宽度
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'remark',
+      fieldName: 'reason',
 
       componentProps: {
         type: 'textarea',

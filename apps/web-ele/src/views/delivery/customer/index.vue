@@ -175,9 +175,9 @@ const handleUpdate = ()=>{
               <ElButton type="primary" link @click="handleEditRow(row)">
                 编辑
               </ElButton>
-              <ElButton type="primary" link @click="handleDeliveryRow(row)">
+              <!-- <ElButton type="primary" link @click="handleDeliveryRow(row)">
                 出库
-              </ElButton>
+              </ElButton> -->
               <ElButton type="danger" link @click="handleDeleteRow(row)">
                 删除
               </ElButton>

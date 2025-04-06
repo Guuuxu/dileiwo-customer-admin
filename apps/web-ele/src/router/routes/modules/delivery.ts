@@ -19,7 +19,15 @@ const routes: RouteRecordRaw[] = [
           title: '客户管理',
         },
       },
-      
+      {
+        name: 'delivery.history',
+        path: '/delivery/history',
+        component: () => import('#/views/delivery/history/index.vue'),
+        meta: {
+          icon: 'lucide:shopping-bag',
+          title: '出库管理',
+        },
+      },
     ],
   },
 ];

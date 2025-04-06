@@ -11,7 +11,7 @@ import { ElButton, ElCard, ElMessage, ElTag,ElMessageBox } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {getRepairList,sendRepair} from '#/api';
+import {getRepairVerifyList,sendRepair} from '#/api';
 import { $t } from '#/locales';
 
 import Edit from './edit.vue';
@@ -63,7 +63,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
-        return await getRepairList({
+        return await getRepairVerifyList({
           page: page.currentPage,
           per_page: page.pageSize,
           ...formValues
@@ -75,7 +75,6 @@ const gridOptions: VxeGridProps<RowType> = {
 const formOptions: VbenFormProps = {
   // 默认展开
   collapsed: false,
-  fieldMappingTime: [['date', ['start', 'end']]],
   schema: [
     {
       component: 'Input',

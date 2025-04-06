@@ -7,10 +7,12 @@ export function getOutboundList(params: Record<string, any>) {
 /**
  * 新增/编辑包装出库
  * @param data - 包含配送信息的对象，类型为任意类型
+ * id 出库id 新增时不传      编辑时传
+ * client_custom_id 客户id
  * @returns
  */
 export function updateDelivery(data: any) {
-  return requestClient.post('/admin/bound/outbound/store', data);
+  return requestClient.post('/web/bound/outbound/store', data);
 }
 
 /**
@@ -19,7 +21,7 @@ export function updateDelivery(data: any) {
  * @returns
  */
 export function getDeliveryDetails(outbound: string) {
-  return requestClient.get(`/admin/bound/outbound/${outbound}`);
+  return requestClient.get(`/web/bound/outbound/${outbound}`);
 }
 
 /**
@@ -28,7 +30,7 @@ export function getDeliveryDetails(outbound: string) {
  * @returns
  */
 export function deleteDelivery(id: number) {
-  return requestClient.post(`/admin/bound/outbound/${id}/delete/`);
+  return requestClient.post(`/web/bound/outbound/${id}/delete`);
 }
 
 /**
@@ -37,7 +39,7 @@ export function deleteDelivery(id: number) {
  * @returns
  */
 export function scanOutboundBarcode(outbound: number, detail_no: string) {
-  return requestClient.post(`/admin/bound/outbound/${outbound}/scan`, {
+  return requestClient.post(`/web/bound/outbound/${outbound}/scan`, {
     detail_no,
   });
 }
@@ -48,7 +50,16 @@ export function scanOutboundBarcode(outbound: number, detail_no: string) {
  * @returns
  */
 export function sendPhoneMessage(id: number) {
-  return requestClient.post('/admin/bound/outbound/send', { id });
+  return requestClient.post(`/web/bound/outbound/${id}/send`, );
+}
+
+/**
+ * 获取出库记录列表
+ * @param params - 查询参数，类型为任意类型
+ * @returns
+ */
+export function getOutboundRecords(params: any) {
+  return requestClient.get('/web/bound/outbound', { params });
 }
 
 /**
@@ -57,5 +68,5 @@ export function sendPhoneMessage(id: number) {
  * @returns
  */
 export function exportData(data: any) {
-  return requestClient.post('/admin/bound/outbound/export', data);
+  return requestClient.post('/web/bound/outbound/export', data);
 }

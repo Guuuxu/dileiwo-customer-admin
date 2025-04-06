@@ -55,17 +55,17 @@ function handleReset() {
 // 表格配置
 interface RowType {
   id: number;
-  createTime: string;
-  type_name: string;
+  created_at: string;
+  order_no: string;
   total_count: string;
   remark: string;
 }
 const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
-    { field: 'type_name', title: '型号' },
+    { field: 'order_no', title: '型号' },
     { field: 'total_count', title: '数量' },
-    { field: 'createTime', title: '出货日期' },
+    { field: 'created_at', title: '出货日期' },
     { field: 'remark', title: '备注' },
     // { field: 'status', title: '状态', slots: { default: 'status' } },
     {
@@ -159,25 +159,10 @@ const handleSetData = (row: RowType, title: string) => {
     })
     .open();
 };
-const handleDeleteRow = (row: RowType) => {
-  ElMessageBox.confirm('此操作将永久删除该条记录, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(() => {
-      // Perform delete operation here
-      // const index = dataList.value.findIndex((item: { id: number; }) => item.id === row.id);
-      // if (index !== -1) {
-      //   dataList.value.splice(index, 1);
-      //   ElMessage.success('删除成功');
-      // }
-      ElMessage.success('删除成功');
-    })
-    .catch(() => {
-      ElMessage.info('已取消删除');
-    });
-};
+
+const handleUpdate = ()=>{
+  gridApi.reload();
+}
 
 </script>
 <template>
@@ -193,6 +178,6 @@ const handleDeleteRow = (row: RowType) => {
       </template>
     </Grid>
 
-    <Drawer />
+    <Drawer @onUpdated="handleUpdate" />
   </Page>
 </template>

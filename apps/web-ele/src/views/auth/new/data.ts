@@ -48,21 +48,7 @@ const handleEnterInput = (val: string) => {
 };
 export function useSchemaScan(): VbenFormSchema[] {
   return [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入',
-        onKeyup(e: any) {
-          if (e.key === 'Enter') {
-            handleEnterInput((e.target as HTMLInputElement).value);
-          }
-        },
-      },
-      fieldName: 'category',
-      label: '请扫描损坏品包装编码',
-      labelWidth: 150, // 设置label宽度
-      rules: 'required',
-    },
+    
   ];
 }
 

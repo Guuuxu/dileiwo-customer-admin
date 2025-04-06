@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { VbenFormProps } from '#/adapter/form';
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import { useAppConfig } from '@vben/hooks';
+const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -11,8 +11,8 @@ import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { updateRepair } from '#/api';
 import { $t } from '#/locales';
-
 
 const router = useRouter();
 const [Form, formApi] = useVbenForm({
@@ -27,18 +27,19 @@ const [Form, formApi] = useVbenForm({
   submitButtonOptions: { show: false },
   // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
   wrapperClass: 'grid-cols-2',
-  
+
   handleSubmit: (values) => {
     ElMessage.success(`表单数据：${JSON.stringify(values)}`);
   },
   schema: [
     {
       component: 'Input',
-      fieldName: 'code',
-      label: '回收包装编码',
+      fieldName: 'model_detail_id',
+      label: '维修品包装编码',
       formItemClass: 'col-span-1',
       labelWidth: 150,
       componentProps: {},
+      rules: 'required',
     },
     {
       component: 'Input',
@@ -48,68 +49,125 @@ const [Form, formApi] = useVbenForm({
       labelWidth: 150,
       componentProps: {
         type: 'textarea',
-        rows: 4
+        rows: 4,
       },
+      rules: 'required',
     },
     {
-      component: 'Input',
-      fieldName: 'code',
+      component: 'Upload',
+      componentProps: {
+        placeholder: '请上传文件',
+        class: 'avatar-uploader',
+        action: '/web/upload',
+        accept: 'image/*',
+        listType: 'picture-card',
+        multiple: true,
+        showUploadList: false,
+        beforeUpload: (file: File) => {
+          console.log(file);
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isGIF = file.type === 'image/gif';
+
+          if (!isJPG && !isPNG && !isGIF) {
+            ElMessage.error({
+              message: $t('ui.formRules.fileTypeError'),
+            });
+          }
+          return isJPG || isPNG || isGIF;
+        },
+        handleAvatarSuccess: (res: any, file: File) => {
+          console.log(res, file);
+          if (res.code === 0) {
+            // globalShareState.set('avatarUrl', res.data.url);
+          } else {
+            ElMessage.error({
+              message: $t('ui.formRules.fileUploadError'),
+            });
+          }
+        },
+      },
+      fieldName: 'main_img',
       label: '包装整体含编码图',
       labelWidth: 150,
       formItemClass: 'col-span-2',
-      componentProps: {},
+
+      rules: 'required',
+      renderComponentContent: () => {
+        return {
+          default: () => '+',
+        };
+      },
     },
     {
-      component: 'Input',
-      fieldName: 'code',
+      component: 'Upload',
+      componentProps: {
+        placeholder: '请上传文件',
+        class: 'avatar-uploader',
+        action: '/web/upload',
+        accept: 'image/*',
+        listType: 'picture-card',
+        multiple: true,
+        showUploadList: false,
+        beforeUpload: (file: File) => {
+          console.log(file);
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isGIF = file.type === 'image/gif';
+
+          if (!isJPG && !isPNG && !isGIF) {
+            ElMessage.error({
+              message: $t('ui.formRules.fileTypeError'),
+            });
+          }
+          return isJPG || isPNG || isGIF;
+        },
+        handleAvatarSuccess: (res: any, file: File) => {
+          console.log(res, file);
+          if (res.code === 0) {
+            // globalShareState.set('avatarUrl', res.data.url);
+          } else {
+            ElMessage.error({
+              message: $t('ui.formRules.fileUploadError'),
+            });
+          }
+        },
+      },
+      fieldName: 'first_img',
       label: '包装瑕疵细部图',
       labelWidth: 150,
       formItemClass: 'col-span-2',
-      componentProps: {},
+
+      renderComponentContent: () => {
+        return {
+          default: () => '+',
+        };
+      },
     },
   ],
 });
 
-function handleSearch() {
-  formApi.getValues();
-}
-function handleReset() {
-  formApi.resetForm();
-}
-
-
-import { ElMessageBox } from 'element-plus';
-const handleDeleteRow = (row: RowType) => {
-  ElMessageBox.confirm(
-    '此操作将永久删除该条记录, 是否继续?',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  ).then(() => {
-    // Perform delete operation here
-    // const index = dataList.value.findIndex((item: { id: number; }) => item.id === row.id);
-    // if (index !== -1) {
-    //   dataList.value.splice(index, 1);
-    //   ElMessage.success('删除成功');
-    // }
-    ElMessage.success('删除成功');
-  }).catch(() => {
-    ElMessage.info('已取消删除');
-  });
+const handleSubmit = async () => {
+  const { valid } = await formApi.validate();
+  if (valid) {
+    const values = await formApi.getValues();
+    console.log('values', values);
+    updateRepair({...values,broken_reason: 0}).then((res) => {
+      console.log('res', res);
+      ElMessage.success('提交成功');
+      formApi.resetForm();
+    });
+  }
 };
-
 
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
     <ElCard>
-      <h3 class="text-[red] mb-2">请留意，疑品为初始认证后7日内申报有效！</h3>
+      <h3 class="mb-2 text-[red]">请留意，疑品为初始认证后7日内申报有效！</h3>
       <Form></Form>
       <template #footer>
-        <div class="text-right"><VbenButton>结束扫描</VbenButton></div>
+        <div class="text-right"><VbenButton @click="handleSubmit">完成</VbenButton></div>
       </template>
     </ElCard>
   </Page>

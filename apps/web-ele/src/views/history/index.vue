@@ -11,6 +11,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
+import { getOutboundRecords,deleteDelivery } from '#/api'
 
 import Edit from './edit.vue';
 
@@ -34,9 +35,9 @@ const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
-    { field: 'category', title: '型号' },
-    { field: 'package', title: '包装' },
-    { field: 'createTime', title: '出货日期' },
+    { field: 'type_name', title: '型号' },
+    { field: 'order_no', title: '包装' },
+    { field: 'created_at', title: '出货日期' },
     { field: 'customer', title: '出货客户' },
     { field: 'contact', title: '联络人' },
     { field: 'address', title: '地址' },
@@ -61,16 +62,17 @@ const gridOptions: VxeGridProps<RowType> = {
     trigger: 'click',
   },
   pagerConfig: {},
-  // proxyConfig: {
-  //   ajax: {
-  //     query: async ({ page }) => {
-  //       return await getExampleTableApi({
-  //         page: page.currentPage,
-  //         per_page: page.pageSize,
-  //       });
-  //     },
-  //   },
-  // },
+  proxyConfig: {
+    ajax: {
+      query: async ({ page },formValues) => {
+        return await getOutboundRecords({
+          page: page.currentPage,
+          per_page: page.pageSize,
+          ...formValues,
+        });
+      },
+    },
+  },
 };
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -100,27 +102,6 @@ const formOptions: VbenFormProps = {
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
-// 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        category: `00002${i}`,
-        package: 'DR200',
-        customer: '张三',
-        contact: '李四',
-        address: '江苏',
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
 
 // 新增
 const handleAdd = () => {
@@ -164,9 +145,6 @@ const handleDeleteRow = (row: RowType) => {
     });
 };
 
-onMounted(() => {
-  loadList(6);
-});
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">

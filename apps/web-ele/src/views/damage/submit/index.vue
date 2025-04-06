@@ -11,7 +11,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
-import {getRepairList} from '#/api';
+import {getRepairSendList} from '#/api';
 
 import Edit from './edit.vue';
 
@@ -60,7 +60,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page },formValues) => {
-        return await getRepairList({
+        return await getRepairSendList({
           page: page.currentPage,
           per_page: page.pageSize,
           ...formValues,

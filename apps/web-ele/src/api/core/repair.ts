@@ -10,16 +10,24 @@ interface data {
  * @returns
  */
 export function updateRepair(data: any) {
-  return requestClient.post('/admin/repair/store', data);
+  return requestClient.post('/web/repair/store', data);
 }
 
 /**
- * 获取损坏列表
+ * 获取待处理列表
  * @param data - 包含查询条件的对象，类型为任意类型
  * @returns
  */
-export function getRepairList(data: data) {
-  return requestClient.get('/admin/repair/send', { params: data });
+export function getRepairVerifyList(data: data) {
+  return requestClient.get('/web/repair/verify', { params: data });
+}
+/**
+ * 获取已提交列表
+ * @param data - 包含查询条件的对象，类型为任意类型
+ * @returns
+ */
+export function getRepairSendList(data: data) {
+  return requestClient.get('/web/repair/send', { params: data });
 }
 
 /**
@@ -28,7 +36,7 @@ export function getRepairList(data: data) {
  * @returns
  */
 export function getRepairDetail(id: string) {
-  return requestClient.get(`/admin/repair/${id}`);
+  return requestClient.get(`/web/repair/${id}`);
 }
 
 /**
@@ -38,7 +46,7 @@ export function getRepairDetail(id: string) {
  * @returns
  */
 export function certifyRepair(id: number) {
-  return requestClient.post(`/admin/repair/${id}/certify`);
+  return requestClient.post(`/web/repair/${id}/certify`);
 }
 
 
@@ -48,14 +56,14 @@ export function certifyRepair(id: number) {
  * @returns
  */
 export function sendRepair(id:number) {
-  return requestClient.post(`/admin/repair/send/${id}`,);
+  return requestClient.post(`/web/repair/send/${id}`,);
 }
 
 /**
- * 扫码获取损坏记录
+ * 扫码
  * @param code - 扫码的唯一标识码
  * @returns
  */
-export function scanRepair(data: { code: string }) {
-  return requestClient.post(`/admin/repair/scan`, data);
+export function scanRepair(data: { detail_no: string }) {
+  return requestClient.post(`/web/repair/scan`, data);
 }

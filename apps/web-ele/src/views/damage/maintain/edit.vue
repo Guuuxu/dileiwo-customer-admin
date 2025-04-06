@@ -8,7 +8,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 
 import { useSchema, useSchemaReason } from './data';
 import { ElMessage } from 'element-plus';
-import { scanOutboundBarcode } from '#/api';
+import { scanRepair,updateRepair,getRepairDetail } from '#/api';
 
 defineOptions({
   name: 'FormDrawer',
@@ -36,11 +36,13 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   layout: 'vertical',
   showDefaultActions: false,
 });
+const detail = ref({})
 // 输入确认
 const handleEnterInput = async () => {
   const formValues = await BaseFormApi.getValues()
-  console.log('handleEnterInput',formValues );
-  // const res = await scanOutboundBarcode(row.value.id,formValues.code)
+  const res = await scanRepair({detail_no:formValues.code})
+  console.log('res',res );
+  detail.value = res
     ElMessage.success('操作完成！')
     step.value = '1'
     BaseFormApi.setValues({
@@ -61,11 +63,24 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onConfirm: async () => {
     if (step.value === '0') {
-      const formValues = await BaseFormApi.getValues()
-      console.log(formValues)
-      if(!formValues.code) ElMessage.warning('请先扫描包装编码');
+      const { valid } = await BaseFormApi.validate();
+      if (valid) {
+        const formValues = await BaseFormApi.getValues()
+        console.log(formValues)
+      }
+      
     } else {
-      drawerApi.close();
+      const { valid } = await BaseFormApi2.validate();
+      if (valid) {
+        const formValues = await BaseFormApi2.getValues()
+        console.log(formValues)
+        updateRepair({...formValues,model_detail_id:detail.value.id}).then((res) => {
+          ElMessage.success('操作完成！')
+          drawerApi.close();
+        })
+        
+      }
+      
     }
   },
   onOpenChange(isOpen: boolean) {
@@ -76,6 +91,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
           ...values,
         });
       }
+    }else{
+      step.value = '0'
+      BaseFormApi.setValues({
+        code: '',
+      })
+      BaseFormApi2.setValues({
+        reason: '',
+        remark: '',
+      })
     }
   },
   title: '详情',
@@ -122,35 +146,14 @@ const gridOptions: VxeGridProps<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 // 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        category: '100',
-        user: '张三',
-        codeRange: '1 - 10002',
-        remark: '备注一下',
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
-onMounted(() => {
-  loadList(6);
-});
+
 </script>
 <template>
   <Drawer>
     <BaseForm v-if="step === '0'" />
 
     <template v-else>
-      <Grid style="height: auto" />
+      <!-- <Grid style="height: auto" /> -->
       <BaseForm2 class="mt-5" />
     </template>
   </Drawer>

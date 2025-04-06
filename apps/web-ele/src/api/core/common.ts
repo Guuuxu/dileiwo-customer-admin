@@ -55,3 +55,16 @@ export async function sendSmsApi(phone: string) {
 export async function getUserInfo() {
   return requestClient.get<LoginResult['data']['user']>('/web/user');
 }
+/**
+ * 上传图片
+ */
+export async function uploadImage(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return baseRequestClient.post<{ url: string; msg: string; code: number }>('/web/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

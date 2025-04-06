@@ -5,15 +5,15 @@ interface data {
 }
 
 export function getCustomerList(params: Record<string, any>) {
-  return requestClient.get('/admin/client', {params});
+  return requestClient.get('/web/client', {params});
 }
 
 export function getCustomerDetails(customerId: number) {
-  return requestClient.get(`/admin/client/${customerId}`);
+  return requestClient.get(`/web/client/${customerId}`);
 }
 
 export function updateCustomer(data: any) {
-  return requestClient.post('/admin/client/store', data);
+  return requestClient.post('/web/client/store', data);
 }
 
 /**
@@ -21,23 +21,7 @@ export function updateCustomer(data: any) {
  * @param {string} customerId - 要删除的客户的唯一标识符
  * @returns
  */ export function deleteCustomer(customerId: number) {
-  return requestClient.post(`/admin/client/${customerId}/delete`);
+  return requestClient.post(`/web/client/${customerId}/delete`);
 }
 
-/**
- * 获取客户的指标信息
- * @param {string} customerId - 客户的唯一标识符
- * @returns
- */
-export function getCustomerMetrics(customerId: number | string) {
-  return requestClient.get(`/admin/client/${customerId}/metric`);
-}
 
-/**
- * 导出客户数据
- * @data {object} data - 导出的查询参数
- * @returns
- */
-export function exportCustomerData(data: Record<string, any>) {
-  return requestClient.post('/admin/client/export', data);
-}
