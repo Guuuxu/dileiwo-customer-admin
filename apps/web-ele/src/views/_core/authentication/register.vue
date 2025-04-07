@@ -3,10 +3,10 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
 import { computed, h, ref } from 'vue';
-import { ElButton,ElMessage } from 'element-plus';
+import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
 
 import { AuthenticationRegister, z } from '@vben/common-ui';
-import {handleRegister} from '#/api'
+import { handleRegister } from '#/api';
 import { $t } from '@vben/locales';
 const router = useRouter();
 defineOptions({ name: 'Register' });
@@ -16,7 +16,7 @@ const CODE_LENGTH = 6;
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
-      component:'Select',
+      component: 'Select',
       fieldName: 'type',
       label: '注册类型',
       componentProps: {
@@ -25,7 +25,7 @@ const formSchema = computed((): VbenFormSchema[] => {
           { label: '中转使用方', value: 2 },
         ],
       },
-      rules: 'required'
+      rules: 'required',
     },
     {
       component: 'Divider',
@@ -38,17 +38,17 @@ const formSchema = computed((): VbenFormSchema[] => {
         };
       },
     },
-   {
+    {
       component: 'Input',
       fieldName: 'name',
       label: '企业名称',
-      rules: 'required'
+      rules: 'required',
     },
     {
       component: 'Input',
       fieldName: 'code',
       label: '企业注册号',
-      rules: 'required'
+      rules: 'required',
     },
     {
       component: 'Input',
@@ -57,8 +57,7 @@ const formSchema = computed((): VbenFormSchema[] => {
     },
     {
       component: 'Input',
-      componentProps: {
-      },
+      componentProps: {},
       fieldName: 'law_person',
       label: '法人名',
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
@@ -67,7 +66,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'Input',
       fieldName: 'law_phone',
       label: '手机号',
-      rules: 'required'
+      rules: 'required',
     },
     {
       component: 'VbenPinInput',
@@ -119,8 +118,7 @@ const formSchema = computed((): VbenFormSchema[] => {
     },
     {
       component: 'Input',
-      componentProps: {
-      },
+      componentProps: {},
       fieldName: 'admin_person',
       label: '管理员姓名',
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
@@ -180,8 +178,7 @@ const formSchema = computed((): VbenFormSchema[] => {
     },
     {
       component: 'Input',
-      componentProps: {
-      },
+      componentProps: {},
       fieldName: 'receive_person',
       label: '收货人姓名',
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
@@ -225,27 +222,57 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   showDefaultActions: false,
 });
 
+const handleAvatarSuccess = (response: any) => {
+  ElMessage.success('上传成功');
+};
+const handleAvatarError = (error: any) => {
+  ElMessage.error('上传失败');
+};
 async function handleSubmit(value: Recordable<any>) {
-  const values = await BaseFormApi.getValues()
-  console.log('BaseFormApi:', BaseFormApi)
+  const values = await BaseFormApi.getValues();
+  console.log('BaseFormApi:', BaseFormApi);
   console.log('register submit:', values);
   handleRegister(values).then((res: any) => {
     ElMessage.success('注册成功');
-    router.replace('/')
-  })
+    router.replace('/');
+  });
 }
-const goToLogin =()=> {
+const goToLogin = () => {
   router.push('/auth/code-login');
-}
+};
 </script>
 
 <template>
-  <div class="reg-wrap w-full h-full">
+  <div class="reg-wrap h-full w-full">
     <BaseForm>
       <template #default="{ form, formProps }">
-        <ElButton type="primary" class="reg-title text-center text-3xl font-bold" @click="handleSubmit">
-            注册
-          </ElButton>
+        <ElButton
+          type="primary"
+          class="reg-title text-center text-3xl font-bold"
+          @click="handleSubmit"
+        >
+          注册
+        </ElButton>
+      </template>
+      <template #img="{ field }">
+        <div class="flex flex-col items-center">
+          <!-- <img
+            class="mb-2 h-16 w-16 rounded-full"
+            :src="field.value"
+            alt="Avatar"
+          /> -->
+          <ElUpload
+            class="avatar-uploader"
+            :show-file-list="false"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :on-success="handleAvatarSuccess"
+            :on-error="handleAvatarError"
+          >
+            <img v-if="field.value" :src="field.value" class="avatar" />
+            <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
+            <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
+          </ElUpload>
+        </div>
       </template>
     </BaseForm>
     <div class="mt-4 text-center text-sm">
@@ -257,5 +284,10 @@ const goToLogin =()=> {
   </div>
 </template>
 <style scoped>
-
+::v-deep .avatar {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+}
 </style>

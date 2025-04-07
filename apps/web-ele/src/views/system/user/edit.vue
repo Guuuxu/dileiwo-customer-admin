@@ -1,8 +1,17 @@
 <script lang="ts" setup>
-import { ref, onMounted, h,useTemplateRef } from 'vue';
+import { ref, onMounted, h, useTemplateRef } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 
-import { ElTabs, ElTabPane, ElUpload, ElRow, ElCol, ElImage,ElMessage,ElLoading } from 'element-plus';
+import {
+  ElTabs,
+  ElTabPane,
+  ElUpload,
+  ElRow,
+  ElCol,
+  ElImage,
+  ElMessage,
+  ElLoading,
+} from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 
 import type { VxeGridProps } from '#/adapter/vxe-table';
@@ -12,7 +21,7 @@ defineOptions({
 });
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { regionData } from '#/utils/index'
+import { regionData } from '#/utils/index';
 const loading = ref(false);
 const CODE_LENGTH = 6;
 const loginRef =
@@ -21,17 +30,16 @@ function sendCodeApi(phoneNumber: string) {
   const loadingFull = ElLoading.service({
     fullscreen: true,
     text: '正在发送验证码',
-    target:'sending-code',
+    target: 'sending-code',
     background: 'rgba(0, 0, 0, 0)',
     customClass: 'send-loading',
-  })
+  });
   setTimeout(() => {
     loadingFull.close();
   }, 2000);
   return new Promise((resolve) => {
     setTimeout(() => {
       ElMessage.success({
-
         message: '验证码已发送',
         duration: 3,
         key: 'sending-code',
@@ -140,10 +148,10 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         options: regionData,
         class: 'w-full',
         props: {
-          label:'name',
-          value:'code',
-          children:'children'
-        }
+          label: 'name',
+          value: 'code',
+          children: 'children',
+        },
       },
       fieldName: 'region',
       label: '省市区',
@@ -190,7 +198,7 @@ const handleAvatarSuccess = (response: any, file: any) => {
 };
 const handleAvatarError = (err: any) => {
   console.log(err);
-}
+};
 
 const srcList = [
   'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
@@ -199,22 +207,22 @@ const srcList = [
 <template>
   <Drawer>
     <BaseForm>
-      <template #enterpriseLogo="{field}">
-            <div class="flex flex-col items-center">
-              <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.avatar" alt="Avatar"> -->
-              <ElUpload
-                class="avatar-uploader"
-                :show-file-list="false"
-                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                :on-success="handleAvatarSuccess"
-                :on-error="handleAvatarError"
-              >
-              <img v-if="field.value" :src="field.value" class="avatar" />
-              <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
-                <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
-              </ElUpload>
-            </div>
-            </template>
+      <template #enterpriseLogo="{ field }">
+        <div class="flex flex-col items-center">
+          <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.avatar" alt="Avatar"> -->
+          <ElUpload
+            class="avatar-uploader"
+            :show-file-list="false"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :on-success="handleAvatarSuccess"
+            :on-error="handleAvatarError"
+          >
+            <img v-if="field.value" :src="field.value" class="avatar" />
+            <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
+            <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
+          </ElUpload>
+        </div>
+      </template>
     </BaseForm>
   </Drawer>
 </template>
@@ -240,9 +248,9 @@ const srcList = [
   border-radius: 10px;
 }
 
-::v-deep{
-    .el-loading-spinner{
-      top: 20px;
-    }
+::v-deep {
+  .el-loading-spinner {
+    top: 20px;
   }
+}
 </style>

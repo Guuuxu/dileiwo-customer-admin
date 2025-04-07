@@ -95,17 +95,6 @@ const formOptions: VbenFormProps = {
     //   fieldName: 'customer',
     //   label: '出库单号',
     // },
-    {
-      component: 'Select',
-      fieldName: 'type_name',
-      label: '出货类型',
-      componentProps:{
-        options: [
-          { label: '租赁', value: '1' },
-          { label: '购买', value: '2' },
-        ],
-      }
-    },
 
   ],
   // 控制表单是否显示折叠按钮
@@ -160,7 +149,7 @@ const handleDeleteRow = (row: RowType) => {
       ElMessage.success('删除成功');
       gridApi.query();
     })
-    
+
   }).catch(() => {
     ElMessage.info('已取消删除');
   });
@@ -182,7 +171,7 @@ const handleUpdate = ()=>{
       <!-- <ElButton type="primary" @click="handleToDetail()"> 导入 </ElButton> -->
     </template>
     <Grid>
-            
+
             <template #action="{ row }">
               <ElButton type="primary" link @click="handleViewRow(row)">
                 明细

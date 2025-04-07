@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-import { ref, onMounted ,h} from 'vue';
+import { ref, onMounted, h } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 
-import { ElMessage,ElButton } from 'element-plus';
+import { ElMessage, ElButton } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
-import {updateCustomer,updateDelivery,scanOutboundBarcode,sendPhoneMessage } from '#/api';
+import {
+  updateCustomer,
+  updateDelivery,
+  scanOutboundBarcode,
+  sendPhoneMessage,
+} from '#/api';
 
 defineOptions({
   name: 'FormDrawer',
@@ -16,14 +21,14 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const type = ref(''); 
+const type = ref('');
 const row = ref({});
 const boundData = ref({});
 // 定义自定义事件
 const emits = defineEmits(['onUpdated']);
 const [ScanForm, ScanFormApi] = useVbenForm({
   schema: [
-  {
+    {
       component: 'Input',
       componentProps: {
         placeholder: '请输入',
@@ -38,19 +43,25 @@ const [ScanForm, ScanFormApi] = useVbenForm({
       label: '请扫描包装编码',
       // 设置标签的宽度为 150 像素
       labelWidth: 150,
-      suffix: () => h('span', { class: 'text-[12px]'}, '点击发送移转⼿机APP端扫码'),
+      suffix: () =>
+        h('span', { class: 'text-[12px]' }, '点击发送移转⼿机APP端扫码'),
       renderComponentContent: () => ({
-      append: () => h(ElButton, { 
-          class: 'text-[12px]', 
-          onClick: () => {
-            console.log('Append 被点击');
-            // 可以根据需要调用相应的处理函数
-            sendPhoneMessage(boundData.value?.id).then((res)=>{
-              console.log(res);
-              ElMessage.success('操作成功');
-            })
-          } 
-        }, '发送'),
+        append: () =>
+          h(
+            ElButton,
+            {
+              class: 'text-[12px]',
+              onClick: () => {
+                console.log('Append 被点击');
+                // 可以根据需要调用相应的处理函数
+                sendPhoneMessage(boundData.value?.id).then((res) => {
+                  console.log(res);
+                  ElMessage.success('操作成功');
+                });
+              },
+            },
+            '发送',
+          ),
       }),
     },
   ],
@@ -63,17 +74,19 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onConfirm: async () => {
     if (type.value === '出库') {
-      
       drawerApi.close();
-      
-    }else{
-      const formValues = await BaseFormApi.getValues()
+    } else {
+      const { valid } = await BaseFormApi.validate();
+      if (!valid) {
+        return;
+      }
+      const formValues = await BaseFormApi.getValues();
       const params = {
         id: row.value?.id,
         ...formValues,
       };
-      const res = await updateCustomer(params)
-      drawerApi.close();    
+      const res = await updateCustomer(params);
+      drawerApi.close();
       ElMessage.success('操作成功');
       // 触发自定义事件通知父组件
       emits('onUpdated');
@@ -82,14 +95,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onOpenChange(isOpen: boolean) {
     if (isOpen) {
       const { values } = drawerApi.getData<Record<string, any>>();
-        row.value = values;
-        type.value = values.type;
-        console.log(values);
-        if(type.value === '出库'){
-          const res = await updateDelivery({client_custom_id:row.value.id});
-          boundData.value = res;
-          ElMessage.success('操作成功');   
-        }
+      row.value = values;
+      type.value = values.type;
+      console.log(values);
+      if (type.value === '出库') {
+        const res = await updateDelivery({ client_custom_id: row.value.id });
+        boundData.value = res;
+        ElMessage.success('操作成功');
+      }
       if (values) {
         BaseFormApi.setValues({
           ...values,
@@ -101,12 +114,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 // 输入确认
 const handleEnterInput = async () => {
-  const formValues = await ScanFormApi.getValues()
-  console.log('handleEnterInput',formValues );
-  const res = await scanOutboundBarcode(boundData.value.id,formValues.code)
-    ElMessage.success('操作完成！')
-    // 触发自定义事件通知父组件
-    emits('onUpdated');
+  const formValues = await ScanFormApi.getValues();
+  console.log('handleEnterInput', formValues);
+  const res = await scanOutboundBarcode(boundData.value.id, formValues.code);
+  ElMessage.success('操作完成！');
+  // 触发自定义事件通知父组件
+  emits('onUpdated');
 };
 </script>
 <template>

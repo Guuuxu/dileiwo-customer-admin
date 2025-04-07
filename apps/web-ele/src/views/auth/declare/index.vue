@@ -6,7 +6,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
-
+import { z } from '#/adapter/form';
 import { ElButton, ElCard, ElMessage, ElTag } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
@@ -92,7 +92,6 @@ const [Form, formApi] = useVbenForm({
       labelWidth: 150,
       formItemClass: 'col-span-2',
 
-      rules: 'required',
       renderComponentContent: () => {
         return {
           default: () => '+',
@@ -152,14 +151,13 @@ const handleSubmit = async () => {
   if (valid) {
     const values = await formApi.getValues();
     console.log('values', values);
-    updateRepair({...values,broken_reason: 0}).then((res) => {
+    updateRepair({ ...values, broken_reason: 0 }).then((res) => {
       console.log('res', res);
       ElMessage.success('提交成功');
       formApi.resetForm();
     });
   }
 };
-
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
@@ -167,7 +165,9 @@ const handleSubmit = async () => {
       <h3 class="mb-2 text-[red]">请留意，疑品为初始认证后7日内申报有效！</h3>
       <Form></Form>
       <template #footer>
-        <div class="text-right"><VbenButton @click="handleSubmit">完成</VbenButton></div>
+        <div class="text-right">
+          <VbenButton @click="handleSubmit">完成</VbenButton>
+        </div>
       </template>
     </ElCard>
   </Page>
