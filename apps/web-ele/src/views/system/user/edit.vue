@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { ref, onMounted, h, useTemplateRef } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
-
+import { useAppConfig } from '@vben/hooks';
+const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import {
   ElTabs,
   ElTabPane,
@@ -215,7 +216,7 @@ const srcList = [
           <ElUpload
             class="avatar-uploader"
             :show-file-list="false"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :action="apiURL + '/web/upload'"
             :on-success="handleAvatarSuccess"
             :on-error="handleAvatarError"
           >
