@@ -11,7 +11,9 @@ import {
   ElImage,
   ElMessage,
   ElLoading,
+  ElIcon,
 } from 'element-plus';
+import { Plus } from '@vben/icons';
 import { useVbenForm } from '#/adapter/form';
 
 import type { VxeGridProps } from '#/adapter/vxe-table';

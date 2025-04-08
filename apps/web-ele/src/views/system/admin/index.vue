@@ -25,9 +25,7 @@
               <ElButton type="primary" link @click="handleEditRow(row)"
                 >编辑
               </ElButton>
-              <ElButton type="primary" link @click="handleDisabled(row)"
-                >{{ row.status ? '禁用' : '启用' }}
-              </ElButton>
+
               <ElButton type="danger" link @click="handleDeleteRow(row)"
                 >删除
               </ElButton>
@@ -46,7 +44,7 @@ import { useRouter } from 'vue-router';
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {getAdminUserListApi,deleteAdminUserApi} from '#/api'
+import { getAdminUserListApi, deleteAdminUserApi } from '#/api';
 
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 import Edit from './edit.vue';
@@ -54,7 +52,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   connectedComponent: Edit,
 });
 
-import { ElButton, ElCard, ElMessage, ElTag ,ElMessageBox} from 'element-plus';
+import { ElButton, ElCard, ElMessage, ElTag, ElMessageBox } from 'element-plus';
 
 import { $t } from '#/locales';
 
@@ -76,18 +74,21 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     { field: 'id', title: 'ID' },
     { field: 'name', title: '姓名' },
-    { field: 'type', title: '角色',cellRender:{
-      name: 'CellSelectLabel',
-      props: {
-        options: [
-          { label: '管理员', value: 1 },
-          { label: '操作员', value: 2 },
-          { label: '代工厂', value: 3 },
-        ],
+    {
+      field: 'type',
+      title: '角色',
+      cellRender: {
+        name: 'CellSelectLabel',
+        props: {
+          options: [
+            { label: '管理员', value: 1 },
+            { label: '操作员', value: 2 },
+            { label: '代工厂', value: 3 },
+          ],
+        },
       },
-    }  },
+    },
     { field: 'phone', title: '手机号' },
-    { field: 'status', title: '状态', slots: { default: 'status' } },
     {
       field: 'action',
       fixed: 'right',
@@ -110,11 +111,11 @@ const gridOptions: VxeGridProps<RowType> = {
   pagerConfig: {},
   proxyConfig: {
     ajax: {
-      query: async ({ page },formValues) => {
+      query: async ({ page }, formValues) => {
         return await getAdminUserListApi({
           page: page.currentPage,
           per_page: page.pageSize,
-          ...formValues
+          ...formValues,
         });
       },
     },
@@ -124,7 +125,7 @@ const formOptions: VbenFormProps = {
   // 默认展开
   collapsed: false,
   schema: [
-  {
+    {
       component: 'Input',
       fieldName: 'keyword',
       label: '用户',
@@ -138,7 +139,7 @@ const formOptions: VbenFormProps = {
       label: '角色',
       componentProps: {
         options: [
-        { label: '管理员', value: 1 },
+          { label: '管理员', value: 1 },
           { label: '操作员', value: 2 },
           { label: '代工厂', value: 3 },
         ],
@@ -152,8 +153,7 @@ const formOptions: VbenFormProps = {
   // 按下回车时是否提交表单
   submitOnEnter: false,
 };
-const [Grid, gridApi] = useVbenVxeGrid({formOptions, gridOptions });
-
+const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
 // 新增
 const handleAdd = () => {
@@ -195,8 +195,6 @@ const handleDeleteRow = (row?: {}) => {
     await deleteAdminUserApi(row.id);
     gridApi.reload();
     ElMessage.success('删除成功');
-  })
+  });
 };
-
-
 </script>

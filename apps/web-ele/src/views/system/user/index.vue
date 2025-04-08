@@ -3,30 +3,27 @@
     <ElCard auto-content-height>
       <template #default>
         <Form>
-          <template #img="{field}">
+          <template #img="{ field }">
             <div class="flex flex-col items-center">
-              <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar">
-              <!-- <ElUpload
+              <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar"> -->
+              <ElUpload
                 class="avatar-uploader"
                 :show-file-list="false"
                 action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                 :on-success="handleAvatarSuccess"
                 :on-error="handleAvatarError"
-              > -->
-              <!-- <img v-if="field.value" :src="field.value" class="avatar" /> -->
-              <!-- <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon> -->
+              >
+                <img v-if="field.value" :src="field.value" class="avatar" />
+                <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
                 <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
-              <!-- </ElUpload> -->
+              </ElUpload>
             </div>
-            </template>
+          </template>
         </Form>
-        
       </template>
       <template #footer>
         <div class="flex justify-end">
-          <VbenButton type="primary" @click="handleEdit()">
-          修改
-        </VbenButton>
+          <VbenButton type="primary" @click="handleEdit()"> 修改 </VbenButton>
         </div>
       </template>
     </ElCard>
@@ -36,7 +33,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAccountInfoApi} from '#/api'
+import { getAccountInfoApi } from '#/api';
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 
 import { Plus } from '@vben/icons';
@@ -45,14 +42,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Edit,
 });
 
-
-import {
-  ElButton,
-  ElCard,
-  ElMessage,
-  ElUpload,
-  ElIcon,
-} from 'element-plus';
+import { ElButton, ElCard, ElMessage, ElUpload, ElIcon } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { $t } from '#/locales';
@@ -79,15 +69,13 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'img',
       label: '企业图示',
       formItemClass: 'row-span-2',
-      componentProps: {
-      },
+      componentProps: {},
     },
     {
       component: 'Span',
       fieldName: 'name',
       label: '企业名称',
-      componentProps: {
-      },
+      componentProps: {},
     },
     {
       component: 'Span',
@@ -98,9 +86,7 @@ const [Form, formApi] = useVbenForm({
       component: 'Span',
       fieldName: 'law_person',
       label: '法人',
-      componentProps: {
-        
-      }
+      componentProps: {},
     },
     {
       component: 'Span',
@@ -108,17 +94,17 @@ const [Form, formApi] = useVbenForm({
       label: '手机号',
     },
     {
-          component: 'Divider',
-          fieldName: '_divider',
-          formItemClass: 'col-span-3',
-          hideLabel: true,
-          renderComponentContent: () => {
-            return {
-              default: () => h('div', '包装回收信息'),
-            };
-          },
-        },
-        {
+      component: 'Divider',
+      fieldName: '_divider',
+      formItemClass: 'col-span-3',
+      hideLabel: true,
+      renderComponentContent: () => {
+        return {
+          default: () => h('div', '包装回收信息'),
+        };
+      },
+    },
+    {
       component: 'Span',
       fieldName: 'receive_person',
       label: '收货人',
@@ -147,14 +133,13 @@ const userInfo = ref({
   receiveAddress: '北京市朝阳区',
   receivePhone: '13999999999',
   img: 'https://avatars.githubusercontent.com/u/95928385',
-})
+});
 const init = () => {
   getAccountInfoApi().then((res: any) => {
     userInfo.value = res.data;
-  })
-}
+  });
+};
 formApi.setValues(userInfo.value);
-
 
 // 编辑
 function handleEdit() {
@@ -173,14 +158,14 @@ const handleAvatarSuccess = (response: any) => {
 };
 const handleAvatarError = (error: any) => {
   ElMessage.error('上传失败');
-}
+};
 
 onMounted(() => {
   init();
-})
+});
 </script>
 <style lang="scss" scoped>
-  .avatar-uploader .avatar {
+.avatar-uploader .avatar {
   display: block;
   width: 178px;
   height: 178px;
