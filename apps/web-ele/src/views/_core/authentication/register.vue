@@ -2,7 +2,9 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
+import { useAppConfig } from '@vben/hooks';
 import { computed, h, ref } from 'vue';
+const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
 import { Plus } from '@vben/icons';
 import { AuthenticationRegister, z } from '@vben/common-ui';
@@ -264,9 +266,23 @@ const goToLogin = () => {
           <ElUpload
             class="avatar-uploader"
             :show-file-list="false"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
             :on-success="handleAvatarSuccess"
             :on-error="handleAvatarError"
+            :before-upload="(file: File) => {
+              console.log(file);
+              const isJPG = file.type === 'image/jpeg';
+              const isPNG = file.type === 'image/png';
+              const isGIF = file.type === 'image/gif';
+
+              if (!isJPG && !isPNG && !isGIF) {
+                ElMessage.error({
+                  message: $t('ui.formRules.fileTypeError'),
+                });
+              }
+              return isJPG || isPNG || isGIF; 
+            }"
+            
+            :action="apiURL + '/web/upload'"
           >
             <img v-if="field.value" :src="field.value" class="avatar" />
             <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
@@ -289,5 +305,28 @@ const goToLogin = () => {
   height: 140px;
   object-fit: cover;
   border-radius: 10px;
+}
+
+</style>
+<style>
+.avatar-uploader .el-upload {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.avatar-uploader-icon {
+  width: 178px;
+  height: 178px;
+  font-size: 28px;
+  color: #8c939d;
+  text-align: center;
 }
 </style>

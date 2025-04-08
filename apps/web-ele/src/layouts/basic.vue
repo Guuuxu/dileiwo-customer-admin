@@ -19,6 +19,7 @@ import { openWindow } from '@vben/utils';
 
 import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
+import { roleOptions } from '#/views/dict';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const notifications = ref<NotificationItem[]>([
@@ -29,27 +30,7 @@ const notifications = ref<NotificationItem[]>([
     message: '描述信息描述信息描述信息',
     title: '收到了 14 份新周报',
   },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
+ 
 ]);
 
 const userStore = useUserStore();
@@ -94,6 +75,13 @@ const avatar = computed(() => {
   return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
 });
 
+const roleName = computed(() => {
+  return (
+    roleOptions.find((item) => item.value == userStore.userInfo?.type)?.label ??
+    '超级管理员'
+  );
+});
+
 async function handleLogout() {
   await authStore.logout(false);
 }
@@ -129,7 +117,7 @@ watch(
         :avatar
         :menus
         :text="userStore.userInfo?.realName"
-        description="管理员"
+        :description="roleName"
         tag-text="Pro"
         @logout="handleLogout"
       />
