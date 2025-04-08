@@ -27,8 +27,15 @@ export async function getUserInfoApi() {
 /**
  * 获取用户信息
  */
-export async function getAccountInfoApi() {
+export async function getAccountApi() {
   return requestClient.get<UserInfo>('/web/client');
+}
+
+/**
+ * 获取账户信息
+ */
+export async function getAccountInfoApi() {
+  return requestClient.get<UserInfo>('/web/clientInfo');
 }
 
 /**

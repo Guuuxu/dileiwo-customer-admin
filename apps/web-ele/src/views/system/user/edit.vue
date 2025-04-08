@@ -63,8 +63,8 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         class: 'avatar',
         src: 'https://egclub.nyc3.digitaloceanspaces.com/production/users/avatars/Te5VsbCnuaXRzyRTnu5hKhln6yqtACHqYggVE64t.png', // Add the source URL for the image here
       },
-      fieldName: 'enterpriseLogo',
-      label: '用户头像',
+      fieldName: 'img',
+      label: '企业图示',
     },
 
     {
@@ -178,12 +178,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
     drawerApi.close();
   },
   onConfirm: async () => {
-    const values = await BaseFormApi.validate();
+    const values = await BaseFormApi.getValues();
+    console.log('values', values);
+    const {valid} = await BaseFormApi.validate();
+    if (!valid) {
+      return;
+    }
     drawerApi.close();
   },
   onOpenChange(isOpen: boolean) {
     if (isOpen) {
       const { values } = drawerApi.getData<Record<string, any>>();
+      console.log('values', values);
       if (values) {
         BaseFormApi.setValues(values);
       }
@@ -198,19 +204,20 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 };
 const handleAvatarSuccess = (response: any, file: any) => {
   console.log(response, file);
+  BaseFormApi.setValues({
+      img: apiURL + response.data.url,
+    });
 };
 const handleAvatarError = (err: any) => {
   console.log(err);
 };
 
-const srcList = [
-  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-];
+
 </script>
 <template>
   <Drawer>
     <BaseForm>
-      <template #enterpriseLogo="{ field }">
+      <template #img="{ field }">
         <div class="flex flex-col items-center">
           <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.avatar" alt="Avatar"> -->
           <ElUpload

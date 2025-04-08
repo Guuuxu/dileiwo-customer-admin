@@ -35,7 +35,7 @@
       </template>
     </ElCard>
 
-    <Drawer />
+    <Drawer @onUpdated="handleUpdate" />
   </Page>
 </template>
 <script lang="ts" setup>
@@ -196,5 +196,8 @@ const handleDeleteRow = (row?: {}) => {
     gridApi.reload();
     ElMessage.success('删除成功');
   });
+};
+const handleUpdate = () => {
+  gridApi.reload();
 };
 </script>

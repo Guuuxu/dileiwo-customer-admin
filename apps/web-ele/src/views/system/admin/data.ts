@@ -26,7 +26,6 @@ export function useSchema(): VbenFormSchema[] {
         options: [
           { label: '管理员', value: 1 },
           { label: '操作员', value: 2 },
-          { label: '代工厂', value: 3 },
         ],
       },
       fieldName: 'type',

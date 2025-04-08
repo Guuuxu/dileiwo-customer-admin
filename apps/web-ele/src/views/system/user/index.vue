@@ -5,8 +5,11 @@
         <Form>
           <template #img="{ field }">
             <div class="flex flex-col items-center">
-              <!-- <img class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar"> -->
-              <ElUpload
+              <div class="bg-gray-200 w-16 h-16">
+                <img v-if="userInfo.img" class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar">
+              </div>
+              
+              <!-- <ElUpload
                 class="avatar-uploader"
                 :show-file-list="false"
                 :action="apiURL + '/web/upload'"
@@ -14,9 +17,9 @@
                 :on-error="handleAvatarError"
               >
                 <img v-if="field.value" :src="field.value" class="avatar" />
-                <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
+                <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon> -->
                 <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
-              </ElUpload>
+              <!-- </ElUpload> -->
             </div>
           </template>
         </Form>
@@ -124,25 +127,14 @@ const [Form, formApi] = useVbenForm({
     },
   ],
 });
-const userInfo = ref({
-  name: '张三',
-  legalPerson: '刀疤',
-  address: '北京市海淀区',
-  phone: '13888888888',
-  email: 'zhangsan@example.com',
-  gender: '男',
-  birthday: '2000-01-01',
-  receivePerson: '李四',
-  receiveAddress: '北京市朝阳区',
-  receivePhone: '13999999999',
-  img: 'https://avatars.githubusercontent.com/u/95928385',
-});
+const userInfo = ref({});
 const init = () => {
   getAccountInfoApi().then((res: any) => {
-    userInfo.value = res.data;
+    console.log(res);
+    userInfo.value = res;
+    formApi.setValues(userInfo.value);
   });
 };
-formApi.setValues(userInfo.value);
 
 // 编辑
 function handleEdit() {
