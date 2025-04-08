@@ -4,7 +4,7 @@ import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
 import { computed, h, ref } from 'vue';
 import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
-
+import { Plus } from '@vben/icons';
 import { AuthenticationRegister, z } from '@vben/common-ui';
 import { handleRegister } from '#/api';
 import { $t } from '@vben/locales';
@@ -193,27 +193,27 @@ const formSchema = computed((): VbenFormSchema[] => {
       fieldName: 'receive_address',
       label: '地址',
     },
-    {
-      component: 'VbenCheckbox',
-      fieldName: 'agreePolicy',
-      renderComponentContent: () => ({
-        default: () =>
-          h('span', [
-            $t('authentication.agree'),
-            h(
-              'a',
-              {
-                class: 'vben-link ml-1 ',
-                href: '',
-              },
-              `${$t('authentication.privacyPolicy')} & ${$t('authentication.terms')}`,
-            ),
-          ]),
-      }),
-      rules: z.boolean().refine((value) => !!value, {
-        message: $t('authentication.agreeTip'),
-      }),
-    },
+    // {
+    //   component: 'VbenCheckbox',
+    //   fieldName: 'agreePolicy',
+    //   renderComponentContent: () => ({
+    //     default: () =>
+    //       h('span', [
+    //         $t('authentication.agree'),
+    //         h(
+    //           'a',
+    //           {
+    //             class: 'vben-link ml-1 ',
+    //             href: '',
+    //           },
+    //           `${$t('authentication.privacyPolicy')} & ${$t('authentication.terms')}`,
+    //         ),
+    //       ]),
+    //   }),
+    //   rules: z.boolean().refine((value) => !!value, {
+    //     message: $t('authentication.agreeTip'),
+    //   }),
+    // },
   ];
 });
 import { useVbenForm } from '#/adapter/form';
