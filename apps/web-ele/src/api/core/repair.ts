@@ -55,8 +55,8 @@ export function certifyRepair(id: number) {
  * @param id - 损坏记录的唯一标识
  * @returns
  */
-export function sendRepair(id:number) {
-  return requestClient.post(`/web/repair/send/${id}`,);
+export function sendRepair(ids) {
+  return requestClient.post(`/web/repair/send`, {ids});
 }
 
 /**

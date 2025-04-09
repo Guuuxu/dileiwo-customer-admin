@@ -39,6 +39,12 @@ export async function getAccountInfoApi() {
 }
 
 /**
+ * 更新账户信息
+ */
+export async function editClient(data) {
+  return requestClient.post<UserInfo>('/web/editClient',data);
+}
+/**
  * 获取管理员用户列表
  */
 export async function getAdminUserListApi(params:any) {

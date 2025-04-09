@@ -37,8 +37,8 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     { field: 'order_no', title: '型号' },
     { field: 'detail_no', title: '包装编码', },
-    { field: 'user', title: '使用者（最近一次）' },
-    { field: 'remark', title: '备注', },
+    { field: 'last_user', title: '使用者（最近一次）' },
+    { field: 'reason', title: '备注', },
     // { field: 'status', title: '状态', slots: { default: 'status' } },
     {
       field: 'action',
@@ -123,7 +123,8 @@ const handleSendRow = (row: RowType) => {
       type: 'warning',
     }
   ).then(async () => {
-    await sendRepair(row.id)
+    await sendRepair([row.id])
+    gridApi.reload();
     ElMessage.success('操作成功');
   })
 }

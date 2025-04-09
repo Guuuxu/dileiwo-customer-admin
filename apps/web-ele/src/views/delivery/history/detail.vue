@@ -63,7 +63,7 @@ const gridOptions: VxeGridProps<RowType> = {
      } },
     { field: 'createTime', title: '租赁到期日' },
     { field: 'receive_person', title: '客户' },
-    { field: 'receive_phone', title: '收件人地址' },
+    { field: 'receive_address', title: '收件人地址' },
   ],
   data: dataList.value,
   height: 'auto',

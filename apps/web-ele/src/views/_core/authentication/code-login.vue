@@ -26,7 +26,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
       fieldName: 'phone',
       label: $t('authentication.mobile'),
-      defaultValue: '13800000000',
+      defaultValue: '',
       rules: z
         .string()
         .min(1, { message: $t('authentication.mobileTip') })
@@ -60,7 +60,7 @@ const formSchema = computed((): VbenFormSchema[] => {
             console.error('Error sending verification code:', error);
           }
         },
-        defaultValue: '123456',
+        defaultValue: '',
         placeholder: $t('authentication.code'),
       },
       fieldName: 'code',

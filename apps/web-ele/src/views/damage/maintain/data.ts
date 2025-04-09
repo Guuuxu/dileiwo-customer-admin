@@ -21,6 +21,8 @@ export function useSchemaReason(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请选择',
         options: damageReasons,
+        multiple: true,
+        clearable: true,
       },
       fieldName: 'broken_reason',
       label: '请选择损坏原因',

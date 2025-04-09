@@ -4,8 +4,6 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { useAppConfig } from '@vben/hooks';
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import {
-  ElTabs,
-  ElTabPane,
   ElUpload,
   ElRow,
   ElCol,
@@ -16,41 +14,20 @@ import {
 } from 'element-plus';
 import { Plus } from '@vben/icons';
 import { useVbenForm } from '#/adapter/form';
-
-import type { VxeGridProps } from '#/adapter/vxe-table';
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {sendSmsApi} from '#/api';
 defineOptions({
   name: 'FormDrawer',
 });
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { regionData } from '#/utils/index';
+import {editClient} from '#/api';
+
 const loading = ref(false);
 const CODE_LENGTH = 6;
 const loginRef =
   useTemplateRef<InstanceType<typeof AuthenticationCodeLogin>>('loginRef');
-function sendCodeApi(phoneNumber: string) {
-  const loadingFull = ElLoading.service({
-    fullscreen: true,
-    text: '正在发送验证码',
-    target: 'sending-code',
-    background: 'rgba(0, 0, 0, 0)',
-    customClass: 'send-loading',
-  });
-  setTimeout(() => {
-    loadingFull.close();
-  }, 2000);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      ElMessage.success({
-        message: '验证码已发送',
-        duration: 3,
-        key: 'sending-code',
-      });
-      resolve({ code: '123456', phoneNumber });
-    }, 3000);
-  });
-}
+
 const [BaseForm, BaseFormApi] = useVbenForm({
   // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
   wrapperClass: 'grid-cols-1',
@@ -72,8 +49,9 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'phone',
+      fieldName: 'law_phone',
       label: '法人手机号',
+      rules: 'required'
     },
     {
       component: 'VbenPinInput',
@@ -89,25 +67,33 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         handleSendCode: async () => {
           // 模拟发送验证码
           // Simulate sending verification code
+          console.log('模拟发送验证码')
           loading.value = true;
           if (!BaseFormApi) {
             loading.value = false;
             throw new Error('formApi is not ready');
           }
-          await BaseFormApi.validateField('phoneNumber');
-          const isPhoneReady = await BaseFormApi.isFieldValid('phoneNumber');
+          const isPhoneReady = await BaseFormApi.isFieldValid('law_phone');
+          console.log('isPhoneReady', isPhoneReady);
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { phoneNumber } = await BaseFormApi.getValues();
-          await sendCodeApi(phoneNumber);
+          const { law_phone } = await BaseFormApi.getValues();
+          try {
+            await sendSmsApi(law_phone);
+          ElMessage.success('已发送');
+          }catch (error) {
+            loading.value = false;
+          }
           loading.value = false;
         },
+        defaultValue: '',
         placeholder: $t('authentication.code'),
       },
-      fieldName: 'code',
+      fieldName: 'law_code',
       label: $t('authentication.code'),
+      defaultValue: '',
       rules: z.string().length(CODE_LENGTH, {
         message: $t('authentication.codeTip', [CODE_LENGTH]),
       }),
@@ -124,16 +110,8 @@ const [BaseForm, BaseFormApi] = useVbenForm({
     },
     {
       component: 'Input',
-      fieldName: 'receiveInfo',
+      fieldName: 'receive_person',
       label: '收货人',
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入',
-      },
-      fieldName: 'recharge',
-      label: '收货人姓名',
     },
 
     {
@@ -141,7 +119,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'isRecommend',
+      fieldName: 'receive_phone',
       label: '手机号',
     },
     {
@@ -156,7 +134,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
           children: 'children',
         },
       },
-      fieldName: 'region',
+      fieldName: 'receive_address',
       label: '省市区',
     },
     {
@@ -172,7 +150,8 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   ],
   showDefaultActions: false,
 });
-
+// 定义自定义事件
+const emits = defineEmits(['onUpdated']);
 const [Drawer, drawerApi] = useVbenDrawer({
   onCancel() {
     drawerApi.close();
@@ -184,6 +163,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (!valid) {
       return;
     }
+    await editClient(values);
+    emits('onUpdated');
     drawerApi.close();
   },
   onOpenChange(isOpen: boolean) {

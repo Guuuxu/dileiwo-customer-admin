@@ -36,7 +36,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'order_no', title: '型号' },
     { field: 'detail_no', title: '包装编码' },
     { field: 'last_inbound', title: '最新入库日期' },
-    { field: 'user', title: '最新使用者' },
+    { field: 'last_user', title: '最新使用者' },
     // {
     //   field: 'action',
     //   fixed: 'right',

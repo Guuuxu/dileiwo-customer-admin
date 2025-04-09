@@ -30,7 +30,7 @@
         </div>
       </template>
     </ElCard>
-    <FormDrawer />
+    <FormDrawer  @onUpdated="handleUpdate"/>
   </Page>
 </template>
 <script lang="ts" setup>
@@ -148,12 +148,9 @@ const handleSetData = (row: any) => {
     })
     .open();
 };
-const handleAvatarSuccess = (response: any) => {
-  ElMessage.success('上传成功');
-};
-const handleAvatarError = (error: any) => {
-  ElMessage.error('上传失败');
-};
+const handleUpdate = () => {
+  init();
+}
 
 onMounted(() => {
   init();
