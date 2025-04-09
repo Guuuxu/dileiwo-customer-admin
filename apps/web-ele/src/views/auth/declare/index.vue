@@ -170,7 +170,11 @@ const handleSubmit = async () => {
   if (valid) {
     const values = await formApi.getValues();
     console.log('values', values);
-    updateRepair({ first_img: values.first_img.join(''),main_img:values.main_img.join(''), broken_reason: [0],model_detail_id: detail.value.id }).then((res) => {
+    if(!detail.value.id){
+      ElMessage.error('请先扫描维修品包装编码');
+      return
+    }
+    await updateRepair({ first_img: values.first_img.join(''),main_img:values.main_img.join(''), broken_reason: [0],model_detail_id: detail.value.id }).then((res) => {
       console.log('res', res);
       ElMessage.success('提交成功');
       formApi.resetForm();
