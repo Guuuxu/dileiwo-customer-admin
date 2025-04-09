@@ -26,3 +26,9 @@ export const roleOptions = [
   { label: '代工厂', value: 3 },
 ];
 
+// 损坏上报状态
+export const damageReportStatusOptions = [
+  { label: '待验证', value: 0 },
+  { label: '已验证', value: 1 },
+  { label: '已寄出', value: 2 },
+]

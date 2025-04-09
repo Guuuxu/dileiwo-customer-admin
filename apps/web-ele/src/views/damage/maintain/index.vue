@@ -12,6 +12,7 @@ import { ElButton, ElCard, ElMessage, ElTag,ElMessageBox } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {getRepairVerifyList,sendRepair} from '#/api';
+import { damageReportStatusOptions } from '#/views/dict'
 import { $t } from '#/locales';
 
 import Edit from './edit.vue';
@@ -39,7 +40,12 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'detail_no', title: '包装编码', },
     { field: 'last_user', title: '使用者（最近一次）' },
     { field: 'reason', title: '备注', },
-    // { field: 'status', title: '状态', slots: { default: 'status' } },
+    { field: 'status', title: '状态', cellRender:{
+      name: 'CellSelectLabel',
+      props:{
+        options: damageReportStatusOptions
+      }
+    }},
     {
       field: 'action',
       fixed: 'right',

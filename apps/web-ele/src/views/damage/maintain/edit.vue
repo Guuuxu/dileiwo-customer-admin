@@ -67,6 +67,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (valid) {
         const formValues = await BaseFormApi.getValues()
         console.log(formValues)
+        updateRepair({...formValues,model_detail_id:detail.value.id,}).then((res) => {
+          ElMessage.success('操作完成！')
+          drawerApi.close();
+        })
       }
       
     } else {
@@ -74,10 +78,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (valid) {
         const formValues = await BaseFormApi2.getValues()
         console.log(formValues)
-        updateRepair({...formValues,model_detail_id:detail.value.id}).then((res) => {
-          ElMessage.success('操作完成！')
-          drawerApi.close();
-        })
+        
         
       }
       

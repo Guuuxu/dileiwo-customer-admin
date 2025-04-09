@@ -35,10 +35,10 @@ const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
-    { field: 'type_name', title: '型号' },
-    { field: 'order_no', title: '包装' },
+    // { field: 'type_name', title: '型号' },
+    { field: 'order_no', title: '单号' },
     { field: 'created_at', title: '出货日期' },
-    { field: '', title: '出货客户' },
+    { field: 'name', title: '出货客户' },
     { field: 'receive_person', title: '联络人' },
     { field: 'receive_address', title: '地址' },
     // { field: 'status', title: '状态', slots: { default: 'status' } },

@@ -13,6 +13,7 @@ import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { updateRepair } from '#/api';
 import { $t } from '#/locales';
+import {scanRepair} from '#/api';
 
 const router = useRouter();
 const [Form, formApi] = useVbenForm({
@@ -38,7 +39,15 @@ const [Form, formApi] = useVbenForm({
       label: '维修品包装编码',
       formItemClass: 'col-span-1',
       labelWidth: 150,
-      componentProps: {},
+      componentProps: {
+        placeholder: '请输入维修品包装编码',
+        onKeyup(e: KeyboardEvent) {
+          if (e.key === 'Enter') {
+            // 如果按下回车键，调用 handleEnterInput 函数
+            handleEnterInput();
+          }
+        },
+      },
       rules: 'required',
     },
     {
@@ -58,7 +67,7 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         placeholder: '请上传文件',
         class: 'avatar-uploader',
-        action: '/web/upload',
+        action: apiURL + '/web/upload',
         accept: 'image/*',
         listType: 'picture-card',
         multiple: true,
@@ -103,7 +112,7 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         placeholder: '请上传文件',
         class: 'avatar-uploader',
-        action: '/web/upload',
+        action: apiURL + '/web/upload',
         accept: 'image/*',
         listType: 'picture-card',
         multiple: true,
@@ -146,12 +155,22 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
+const detail = ref({})
+// 输入确认
+const handleEnterInput = async () => {
+  const formValues = await formApi.getValues()
+  const res = await scanRepair({detail_no:formValues.code})
+  console.log('res',res );
+  detail.value = res
+    ElMessage.success('操作完成！')
+};
+
 const handleSubmit = async () => {
   const { valid } = await formApi.validate();
   if (valid) {
     const values = await formApi.getValues();
     console.log('values', values);
-    updateRepair({ ...values, broken_reason: 0 }).then((res) => {
+    updateRepair({ first_img: values.first_img.join(''),main_img:values.main_img.join(''), broken_reason: [0],model_detail_id: detail.value.id }).then((res) => {
       console.log('res', res);
       ElMessage.success('提交成功');
       formApi.resetForm();

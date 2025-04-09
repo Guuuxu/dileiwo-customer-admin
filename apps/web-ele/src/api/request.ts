@@ -4,7 +4,7 @@
 import type { RequestClientOptions } from '@vben/request';
 
 import { useAppConfig } from '@vben/hooks';
-import { preferences } from '@vben/preferences';
+import { preferences,updatePreferences } from '@vben/preferences';
 import {
   authenticateResponseInterceptor,
   defaultResponseInterceptor,
@@ -18,6 +18,7 @@ import { ElMessage } from 'element-plus';
 import { useAuthStore } from '#/store';
 
 import { refreshTokenApi } from './core';
+import { router } from '#/router';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -101,6 +102,19 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const errorMessage = responseData?.msg ?? responseData?.message ?? '';
       // 如果没有错误信息，则会根据状态码进行提示
       ElMessage.error(errorMessage || msg);
+      if(responseData?.code == 401){
+        doReAuthenticate();
+        const accessStore = useAccessStore();
+        accessStore.setAccessToken(null);
+        // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
+        const loginExpiredMode = preferences.app.loginExpiredMode;
+        
+          updatePreferences({ app: { loginExpiredMode: 'page' } });
+          // await getMockStatusApi('401');
+          updatePreferences({ app: { loginExpiredMode } });
+          // router.replace({ path: '/auth/code-login', query: { redirect: router.currentRoute.value.fullPath } });
+          router.replace({ path: '/auth/login', query: { redirect: router.currentRoute.value.fullPath } });
+        }
     }),
   );
 
