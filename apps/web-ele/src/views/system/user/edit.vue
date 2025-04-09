@@ -186,7 +186,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const handleAvatarSuccess = (response: any, file: any) => {
   console.log(response, file);
   BaseFormApi.setValues({
-      img: apiURL + response.data.url,
+      img: response.data.url,
     });
 };
 const handleAvatarError = (err: any) => {

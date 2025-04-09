@@ -2,7 +2,6 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
-import { useAppConfig } from '@vben/hooks';
 import { computed, h, ref } from 'vue';
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
@@ -17,18 +16,18 @@ const loading = ref(false);
 const CODE_LENGTH = 6;
 const formSchema = computed((): VbenFormSchema[] => {
   return [
-    // {
-    //   component: 'Select',
-    //   fieldName: 'type',
-    //   label: '注册类型',
-    //   componentProps: {
-    //     options: [
-    //       { label: '租赁/购买方', value: 1 },
-    //       { label: '中转使用方', value: 2 },
-    //     ],
-    //   },
-    //   rules: 'required',
-    // },
+    {
+      component: 'Select',
+      fieldName: 'type',
+      label: '注册类型',
+      componentProps: {
+        options: [
+          { label: '租赁/购买方', value: 1 },
+          { label: '中转使用方', value: 2 },
+        ],
+      },
+      rules: 'required',
+    },
     {
       component: 'Divider',
       fieldName: '_divider',
@@ -223,7 +222,17 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   schema: formSchema.value,
   showDefaultActions: false,
 });
-
+const beforeUpload = (file: any) => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    ElMessage.error('上传图片只能是 JPG 或 PNG 格式!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    ElMessage.error('上传头像图片大小不能超过 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
 const handleAvatarSuccess = (response: any) => {
   ElMessage.success('上传成功');
 };
@@ -266,23 +275,10 @@ const goToLogin = () => {
           <ElUpload
             class="avatar-uploader"
             :show-file-list="false"
+            :action="apiURL + '/web/upload'"
+            :before-upload="beforeUpload"
             :on-success="handleAvatarSuccess"
             :on-error="handleAvatarError"
-            :before-upload="(file: File) => {
-              console.log(file);
-              const isJPG = file.type === 'image/jpeg';
-              const isPNG = file.type === 'image/png';
-              const isGIF = file.type === 'image/gif';
-
-              if (!isJPG && !isPNG && !isGIF) {
-                ElMessage.error({
-                  message: $t('ui.formRules.fileTypeError'),
-                });
-              }
-              return isJPG || isPNG || isGIF; 
-            }"
-            
-            :action="apiURL + '/web/upload'"
           >
             <img v-if="field.value" :src="field.value" class="avatar" />
             <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon>
@@ -305,28 +301,5 @@ const goToLogin = () => {
   height: 140px;
   object-fit: cover;
   border-radius: 10px;
-}
-
-</style>
-<style>
-.avatar-uploader .el-upload {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.avatar-uploader-icon {
-  width: 178px;
-  height: 178px;
-  font-size: 28px;
-  color: #8c939d;
-  text-align: center;
 }
 </style>

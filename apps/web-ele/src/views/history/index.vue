@@ -11,7 +11,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
-import { getOutboundRecords,deleteDelivery } from '#/api'
+import { getOutboundRecords, deleteDelivery } from '#/api';
 
 import Edit from './edit.vue';
 
@@ -38,9 +38,9 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'type_name', title: '型号' },
     { field: 'order_no', title: '包装' },
     { field: 'created_at', title: '出货日期' },
-    { field: 'customer', title: '出货客户' },
-    { field: 'contact', title: '联络人' },
-    { field: 'address', title: '地址' },
+    { field: '', title: '出货客户' },
+    { field: 'receive_person', title: '联络人' },
+    { field: 'receive_address', title: '地址' },
     // { field: 'status', title: '状态', slots: { default: 'status' } },
     {
       field: 'action',
@@ -64,7 +64,7 @@ const gridOptions: VxeGridProps<RowType> = {
   pagerConfig: {},
   proxyConfig: {
     ajax: {
-      query: async ({ page },formValues) => {
+      query: async ({ page }, formValues) => {
         return await getOutboundRecords({
           page: page.currentPage,
           per_page: page.pageSize,
@@ -85,8 +85,6 @@ const formOptions: VbenFormProps = {
       label: '类型',
       componentProps: {
         options: [
-          { label: '租赁', value: '1' },
-          { label: '购买', value: '2' },
           { label: '出库', value: '3' },
           { label: '回收', value: '4' },
         ],
@@ -101,7 +99,6 @@ const formOptions: VbenFormProps = {
   submitOnEnter: false,
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
-
 
 // 新增
 const handleAdd = () => {
@@ -144,7 +141,6 @@ const handleDeleteRow = (row: RowType) => {
       ElMessage.info('已取消删除');
     });
 };
-
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
