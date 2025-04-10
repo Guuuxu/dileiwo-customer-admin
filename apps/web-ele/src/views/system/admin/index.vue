@@ -130,7 +130,7 @@ const formOptions: VbenFormProps = {
       fieldName: 'keyword',
       label: '用户',
       componentProps: {
-        placeholder: '请输入用户ID/昵称/手机号',
+        placeholder: '请输入用户ID/姓名/手机号',
       },
     },
     {
@@ -141,7 +141,6 @@ const formOptions: VbenFormProps = {
         options: [
           { label: '管理员', value: 1 },
           { label: '操作员', value: 2 },
-          { label: '代工厂', value: 3 },
         ],
       },
     },

@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
       icon: 'ion:settings-outline',
       order: 7000,
       title: $t('page.system.title'),
+      authority: ['1', '3'],
     },
     name: 'System',
     path: '/system',

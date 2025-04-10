@@ -50,7 +50,7 @@ export function scanOutboundBarcode(outbound: number, detail_no: string) {
  * @returns
  */
 export function sendPhoneMessage(id: number) {
-  return requestClient.post(`/web/bound/outbound/${id}/send`, );
+  return requestClient.post(`/web/bound/outbound/${id}/send`);
 }
 
 /**
@@ -69,4 +69,13 @@ export function getOutboundRecords(params: any) {
  */
 export function exportData(data: any) {
   return requestClient.post('/web/bound/outbound/export', data);
+}
+
+/**
+ * 使用记录列表
+ * @param params - 查询参数，类型为任意类型
+ * @returns
+ */
+export function getInventoryRecords(params: any) {
+  return requestClient.get('/web/bound/outbound/inventory', { params });
 }

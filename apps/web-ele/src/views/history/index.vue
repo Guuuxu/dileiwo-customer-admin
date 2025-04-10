@@ -11,7 +11,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
-import { getOutboundRecords, deleteDelivery } from '#/api';
+import { getInventoryRecords, deleteDelivery } from '#/api';
 
 import Edit from './edit.vue';
 
@@ -36,19 +36,13 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     // { field: 'type_name', title: '型号' },
-    { field: 'order_no', title: '单号' },
-    { field: 'created_at', title: '出货日期' },
-    { field: 'name', title: '出货客户' },
-    { field: 'receive_person', title: '联络人' },
-    { field: 'receive_address', title: '地址' },
-    // { field: 'status', title: '状态', slots: { default: 'status' } },
-    {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: '操作',
-      width: 150,
-    },
+    { field: 'detail_no', title: '包装编码', width: 150 },
+    { field: 'month_limit', title: '总循环次数' },
+    { field: 'limit_count', title: '单月已用' },
+    { field: 'remain_count', title: '单月剩余用量' },
+    { field: 'type', title: '类型', slots: { default: 'type' } },
+    { field: 'name', title: '客户' },
+    { field: 'receive_address', title: '收件人地址' },
   ],
   data: dataList.value,
   height: 'auto',
@@ -65,7 +59,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
-        return await getOutboundRecords({
+        return await getInventoryRecords({
           page: page.currentPage,
           per_page: page.pageSize,
           ...formValues,
@@ -85,8 +79,9 @@ const formOptions: VbenFormProps = {
       label: '类型',
       componentProps: {
         options: [
-          { label: '出库', value: '3' },
-          { label: '回收', value: '4' },
+          { label: '出库', value: '1' },
+          { label: '回收', value: '2' },
+          { label: '损坏', value: '3' },
         ],
       },
     },
@@ -149,10 +144,10 @@ const handleDeleteRow = (row: RowType) => {
       <!-- <ElButton type="primary" @click="handleToDetail()"> 导入 </ElButton> -->
     </template>
     <Grid>
-      <template #action="{ row }">
-        <ElButton type="primary" link @click="handleViewRow(row)">
-          明细
-        </ElButton>
+      <template #type="{ row }">
+        <span v-if="row.type == '1'">出库</span>
+        <span v-if="row.type == '2'">回收</span>
+        <span v-if="row.type == '3'">损坏</span>
       </template>
     </Grid>
 

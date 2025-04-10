@@ -5,10 +5,15 @@
         <Form>
           <template #img="{ field }">
             <div class="flex flex-col items-center">
-              <div class="bg-gray-200 w-16 h-16">
-                <img v-if="userInfo.img" class="w-16 h-16 rounded-full mb-2" :src="userInfo.img" alt="Avatar">
+              <div class="h-16 w-16 bg-gray-200">
+                <img
+                  v-if="userInfo.img"
+                  class="mb-2 h-16 w-16 rounded-full"
+                  :src="userInfo.img"
+                  alt="Avatar"
+                />
               </div>
-              
+
               <!-- <ElUpload
                 class="avatar-uploader"
                 :show-file-list="false"
@@ -18,7 +23,7 @@
               >
                 <img v-if="field.value" :src="field.value" class="avatar" />
                 <ElIcon v-else class="avatar-uploader-icon"><Plus /></ElIcon> -->
-                <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
+              <!-- <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
               <!-- </ElUpload> -->
             </div>
           </template>
@@ -30,7 +35,7 @@
         </div>
       </template>
     </ElCard>
-    <FormDrawer  @onUpdated="handleUpdate"/>
+    <FormDrawer @onUpdated="handleUpdate" />
   </Page>
 </template>
 <script lang="ts" setup>
@@ -96,7 +101,7 @@ const [Form, formApi] = useVbenForm({
     },
     {
       component: 'Span',
-      fieldName: 'link_phone',
+      fieldName: 'phone',
       label: '手机号',
     },
     {
@@ -150,7 +155,7 @@ const handleSetData = (row: any) => {
 };
 const handleUpdate = () => {
   init();
-}
+};
 
 onMounted(() => {
   init();

@@ -13,8 +13,7 @@ defineOptions({
   name: 'FormDrawer',
 });
 
-
-const row = ref({})
+const row = ref({});
 const [Drawer, drawerApi] = useVbenDrawer({
   class: 'w-[50%]',
   footer: false,
@@ -53,15 +52,19 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     // { field: 'category', title: '型号' },
     { field: 'detail_no', title: '包装编码' },
-    { field: 'limit_count', title: '总循环次数',width: 70 },
-    { field: 'month_limit', title: '单月已用',width: 70 },
-    { field: 'remain_count', title: '单月剩余用量',width: 70 },
-    { field: 'status', title: '状态', width: 60,slots: { 
-      default: ({ row }) => {
-        return row.status == '1' ? '出库' : '回收';
-      }
-     } },
-    { field: 'createTime', title: '租赁到期日' },
+    { field: 'limit_count', title: '总循环次数', width: 70 },
+    { field: 'month_limit', title: '单月已用', width: 70 },
+    { field: 'remain_count', title: '单月剩余用量', width: 70 },
+    {
+      field: 'status',
+      title: '状态',
+      width: 60,
+      slots: {
+        default: ({ row }) => {
+          return row.status == '1' ? '出库' : '回收';
+        },
+      },
+    },
     { field: 'receive_person', title: '客户' },
     { field: 'receive_address', title: '收件人地址' },
   ],
@@ -88,7 +91,6 @@ const gridOptions: VxeGridProps<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 // 模拟行数据
-
 </script>
 <template>
   <Drawer>

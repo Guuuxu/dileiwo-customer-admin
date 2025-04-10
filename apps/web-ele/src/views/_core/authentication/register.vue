@@ -3,6 +3,7 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 import { useRouter } from 'vue-router';
 import { computed, h, ref } from 'vue';
+import { useAppConfig } from '@vben/hooks';
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
 import { Plus } from '@vben/icons';
@@ -233,8 +234,15 @@ const beforeUpload = (file: any) => {
   }
   return isJpgOrPng && isLt2M;
 };
-const handleAvatarSuccess = (response: any) => {
+const handleAvatarSuccess = async (response: any) => {
   ElMessage.success('上传成功');
+  if (response.data && response.data.url) {
+    const values = await BaseFormApi.getValues();
+    BaseFormApi?.setValues({
+      ...values,
+      img: response.data.url,
+    });
+  }
 };
 const handleAvatarError = (error: any) => {
   ElMessage.error('上传失败');
