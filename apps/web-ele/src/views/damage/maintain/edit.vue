@@ -8,7 +8,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 
 import { useSchema, useSchemaReason } from './data';
 import { ElMessage } from 'element-plus';
-import { scanRepair,updateRepair,getRepairDetail } from '#/api';
+import { scanRepair, updateRepair, getRepairDetail } from '#/api';
 
 defineOptions({
   name: 'FormDrawer',
@@ -16,7 +16,7 @@ defineOptions({
 const step = ref('0');
 const [BaseForm, BaseFormApi] = useVbenForm({
   schema: [
-  {
+    {
       component: 'Input',
       componentProps: {
         placeholder: '请输入',
@@ -36,19 +36,19 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   layout: 'vertical',
   showDefaultActions: false,
 });
-const detail = ref({})
+const detail = ref({});
 // 输入确认
 const handleEnterInput = async () => {
-  const formValues = await BaseFormApi.getValues()
-  const res = await scanRepair({detail_no:formValues.code})
-  console.log('res',res );
-  detail.value = res
-    ElMessage.success('操作完成！')
-    step.value = '1'
-    BaseFormApi.setValues({
-      ...formValues,
-      code: '',
-    })
+  const formValues = await BaseFormApi.getValues();
+  const res = await scanRepair({ detail_no: formValues.code });
+  console.log('res', res);
+  detail.value = res;
+  ElMessage.success('操作完成！');
+  step.value = '1';
+  BaseFormApi.setValues({
+    ...formValues,
+    code: '',
+  });
 };
 
 const [BaseForm2, BaseFormApi2] = useVbenForm({
@@ -65,23 +65,21 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (step.value === '0') {
       const { valid } = await BaseFormApi.validate();
       if (valid) {
-        const formValues = await BaseFormApi.getValues()
-        console.log(formValues)
-        updateRepair({...formValues,model_detail_id:detail.value.id,}).then((res) => {
-          ElMessage.success('操作完成！')
-          drawerApi.close();
-        })
+        const formValues = await BaseFormApi.getValues();
+        console.log(formValues);
+        updateRepair({ ...formValues, model_detail_id: detail.value.id }).then(
+          (res) => {
+            ElMessage.success('操作完成！');
+            drawerApi.close();
+          },
+        );
       }
-      
     } else {
       const { valid } = await BaseFormApi2.validate();
       if (valid) {
-        const formValues = await BaseFormApi2.getValues()
-        console.log(formValues)
-        
-        
+        const formValues = await BaseFormApi2.getValues();
+        console.log(formValues);
       }
-      
     }
   },
   onOpenChange(isOpen: boolean) {
@@ -92,15 +90,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
           ...values,
         });
       }
-    }else{
-      step.value = '0'
+    } else {
+      step.value = '0';
       BaseFormApi.setValues({
         code: '',
-      })
+      });
       BaseFormApi2.setValues({
         reason: '',
         remark: '',
-      })
+      });
     }
   },
   title: '详情',
@@ -147,7 +145,6 @@ const gridOptions: VxeGridProps<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 // 模拟行数据
-
 </script>
 <template>
   <Drawer>

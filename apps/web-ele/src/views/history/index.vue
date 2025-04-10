@@ -75,7 +75,7 @@ const formOptions: VbenFormProps = {
   schema: [
     {
       component: 'Select',
-      fieldName: 'type',
+      fieldName: 'type_name',
       label: '类型',
       componentProps: {
         options: [

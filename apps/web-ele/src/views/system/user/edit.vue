@@ -14,14 +14,14 @@ import {
 } from 'element-plus';
 import { Plus } from '@vben/icons';
 import { useVbenForm } from '#/adapter/form';
-import {sendSmsApi} from '#/api';
+import { sendSmsApi } from '#/api';
 defineOptions({
   name: 'FormDrawer',
 });
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { regionData } from '#/utils/index';
-import {editClient} from '#/api';
+import { editClient } from '#/api';
 
 const loading = ref(false);
 const CODE_LENGTH = 6;
@@ -38,7 +38,6 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         placeholder: '请输入',
 
         class: 'avatar',
-        src: 'https://egclub.nyc3.digitaloceanspaces.com/production/users/avatars/Te5VsbCnuaXRzyRTnu5hKhln6yqtACHqYggVE64t.png', // Add the source URL for the image here
       },
       fieldName: 'img',
       label: '企业图示',
@@ -49,9 +48,9 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请输入',
       },
-      fieldName: 'law_phone',
+      fieldName: 'phone',
       label: '法人手机号',
-      rules: 'required'
+      rules: 'required',
     },
     {
       component: 'VbenPinInput',
@@ -67,7 +66,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
         handleSendCode: async () => {
           // 模拟发送验证码
           // Simulate sending verification code
-          console.log('模拟发送验证码')
+          console.log('模拟发送验证码');
           loading.value = true;
           if (!BaseFormApi) {
             loading.value = false;
@@ -82,8 +81,8 @@ const [BaseForm, BaseFormApi] = useVbenForm({
           const { law_phone } = await BaseFormApi.getValues();
           try {
             await sendSmsApi(law_phone);
-          ElMessage.success('已发送');
-          }catch (error) {
+            ElMessage.success('已发送');
+          } catch (error) {
             loading.value = false;
           }
           loading.value = false;
@@ -122,30 +121,28 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       fieldName: 'receive_phone',
       label: '手机号',
     },
-    {
-      component: 'Cascader',
-      componentProps: {
-        placeholder: '请选择省市区',
-        options: regionData,
-        class: 'w-full',
-        props: {
-          label: 'name',
-          value: 'code',
-          children: 'children',
-        },
-      },
-      fieldName: 'receive_address',
-      label: '省市区',
-    },
+    // {
+    //   component: 'Cascader',
+    //   componentProps: {
+    //     placeholder: '请选择省市区',
+    //     options: regionData,
+    //     class: 'w-full',
+    //     props: {
+    //       label: 'name',
+    //       value: 'code',
+    //       children: 'children',
+    //     },
+    //   },
+    //   fieldName: 'receive_address',
+    //   label: '省市区',
+    // },
     {
       component: 'Input',
       componentProps: {
-        placeholder: '请输入详细地址',
-        type: 'textarea',
-        rows: 3,
+        placeholder: '请输入',
       },
-      fieldName: 'address',
-      label: '',
+      fieldName: 'receive_address',
+      label: '收货地址',
     },
   ],
   showDefaultActions: false,
@@ -159,7 +156,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: async () => {
     const values = await BaseFormApi.getValues();
     console.log('values', values);
-    const {valid} = await BaseFormApi.validate();
+    const { valid } = await BaseFormApi.validate();
     if (!valid) {
       return;
     }
@@ -186,14 +183,12 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const handleAvatarSuccess = (response: any, file: any) => {
   console.log(response, file);
   BaseFormApi.setValues({
-      img: response.data.url,
-    });
+    img: response.data.url,
+  });
 };
 const handleAvatarError = (err: any) => {
   console.log(err);
 };
-
-
 </script>
 <template>
   <Drawer>

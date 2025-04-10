@@ -13,9 +13,13 @@ import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { updateRepair } from '#/api';
 import { $t } from '#/locales';
-import {scanRepair} from '#/api';
+import { scanRepair } from '#/api';
 
 const router = useRouter();
+const main_img = ref('');
+const first_img = ref('');
+const second_img = ref('');
+
 const [Form, formApi] = useVbenForm({
   commonConfig: {
     // 所有表单项
@@ -35,7 +39,7 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'model_detail_id',
+      fieldName: 'code',
       label: '维修品包装编码',
       formItemClass: 'col-span-1',
       labelWidth: 150,
@@ -69,8 +73,8 @@ const [Form, formApi] = useVbenForm({
         class: 'avatar-uploader',
         action: apiURL + '/web/upload',
         accept: 'image/*',
+        name: 'file',
         listType: 'picture-card',
-        multiple: true,
         showUploadList: false,
         beforeUpload: (file: File) => {
           console.log(file);
@@ -85,10 +89,10 @@ const [Form, formApi] = useVbenForm({
           }
           return isJPG || isPNG || isGIF;
         },
-        handleAvatarSuccess: (res: any, file: File) => {
+        onSuccess: (res: any, file: File) => {
           console.log(res, file);
-          if (res.code === 0) {
-            // globalShareState.set('avatarUrl', res.data.url);
+          if (res.code === 200) {
+            main_img.value = res.data.url;
           } else {
             ElMessage.error({
               message: $t('ui.formRules.fileUploadError'),
@@ -114,8 +118,8 @@ const [Form, formApi] = useVbenForm({
         class: 'avatar-uploader',
         action: apiURL + '/web/upload',
         accept: 'image/*',
+        name: 'file',
         listType: 'picture-card',
-        multiple: true,
         showUploadList: false,
         beforeUpload: (file: File) => {
           console.log(file);
@@ -130,10 +134,10 @@ const [Form, formApi] = useVbenForm({
           }
           return isJPG || isPNG || isGIF;
         },
-        handleAvatarSuccess: (res: any, file: File) => {
+        onSuccess: (res: any, file: File) => {
           console.log(res, file);
-          if (res.code === 0) {
-            // globalShareState.set('avatarUrl', res.data.url);
+          if (res.code === 200) {
+            first_img.value = res.data.url;
           } else {
             ElMessage.error({
               message: $t('ui.formRules.fileUploadError'),
@@ -152,17 +156,62 @@ const [Form, formApi] = useVbenForm({
         };
       },
     },
+    {
+      component: 'Upload',
+      componentProps: {
+        placeholder: '请上传文件',
+        class: 'avatar-uploader',
+        action: apiURL + '/web/upload',
+        accept: 'image/*',
+        name: 'file',
+        listType: 'picture-card',
+        showUploadList: false,
+        beforeUpload: (file: File) => {
+          console.log(file);
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isGIF = file.type === 'image/gif';
+
+          if (!isJPG && !isPNG && !isGIF) {
+            ElMessage.error({
+              message: $t('ui.formRules.fileTypeError'),
+            });
+          }
+          return isJPG || isPNG || isGIF;
+        },
+        onSuccess: (res: any, file: File) => {
+          console.log(res, file);
+          if (res.code === 200) {
+            second_img.value = res.data.url;
+          } else {
+            ElMessage.error({
+              message: $t('ui.formRules.fileUploadError'),
+            });
+          }
+        },
+      },
+      fieldName: 'second_img',
+      label: '包装瑕疵细部图2',
+      labelWidth: 150,
+      formItemClass: 'col-span-2',
+
+      renderComponentContent: () => {
+        return {
+          default: () => '+',
+        };
+      },
+    },
   ],
 });
 
-const detail = ref({})
+const detail = ref({});
 // 输入确认
 const handleEnterInput = async () => {
-  const formValues = await formApi.getValues()
-  const res = await scanRepair({detail_no:formValues.code})
-  console.log('res',res );
-  detail.value = res
-    ElMessage.success('操作完成！')
+  const formValues = await formApi.getValues();
+  const res = await scanRepair({ detail_no: formValues.code });
+  console.log('res', res);
+  detail.value = res;
+  ElMessage.success('操作完成！');
 };
 
 const handleSubmit = async () => {
@@ -170,11 +219,17 @@ const handleSubmit = async () => {
   if (valid) {
     const values = await formApi.getValues();
     console.log('values', values);
-    if(!detail.value.id){
+    if (!detail.value.id) {
       ElMessage.error('请先扫描维修品包装编码');
-      return
+      return;
     }
-    await updateRepair({ first_img: values.first_img.join(''),main_img:values.main_img.join(''), broken_reason: [0],model_detail_id: detail.value.id }).then((res) => {
+    await updateRepair({
+      first_img: first_img.value,
+      main_img: main_img.value,
+      second_img: second_img.value,
+      broken_reason: [0],
+      model_detail_id: detail.value.id,
+    }).then((res) => {
       console.log('res', res);
       ElMessage.success('提交成功');
       formApi.resetForm();

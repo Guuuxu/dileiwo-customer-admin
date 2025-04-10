@@ -31,7 +31,13 @@
       </template>
       <template #footer>
         <div class="flex justify-end">
-          <VbenButton type="primary" @click="handleEdit()"> 修改 </VbenButton>
+          <VbenButton
+            type="primary"
+            @click="handleEdit()"
+            v-if="hasAccessByCodes(['3'])"
+          >
+            修改
+          </VbenButton>
         </div>
       </template>
     </ElCard>
@@ -42,8 +48,8 @@
 import { ref, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppConfig } from '@vben/hooks';
-const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
-
+import { AccessControl, useAccess } from '@vben/access';
+const { hasAccessByCodes } = useAccess();
 import { getAccountInfoApi } from '#/api';
 import { Page, useVbenDrawer, VbenButton } from '@vben/common-ui';
 

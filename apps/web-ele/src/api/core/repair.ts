@@ -46,17 +46,16 @@ export function getRepairDetail(id: string) {
  * @returns
  */
 export function certifyRepair(id: number) {
-  return requestClient.post(`/web/repair/${id}/certify`);
+  return requestClient.post(`/web/repair/${id}/vertify`);
 }
-
 
 /**
  * 寄出
  * @param id - 损坏记录的唯一标识
  * @returns
  */
-export function sendRepair(ids) {
-  return requestClient.post(`/web/repair/send`, {ids});
+export function sendRepair(id) {
+  return requestClient.post(`/web/repair/send/${id}`);
 }
 
 /**

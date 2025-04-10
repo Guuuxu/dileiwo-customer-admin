@@ -7,12 +7,12 @@ import { useRouter } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
 
-import { ElButton, ElCard, ElMessage, ElTag,ElMessageBox } from 'element-plus';
+import { ElButton, ElCard, ElMessage, ElTag, ElMessageBox } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {getRepairVerifyList,sendRepair} from '#/api';
-import { damageReportStatusOptions } from '#/views/dict'
+import { getRepairVerifyList, sendRepair } from '#/api';
+import { damageReportStatusOptions } from '#/views/dict';
 import { $t } from '#/locales';
 
 import Edit from './edit.vue';
@@ -37,15 +37,19 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     { field: 'order_no', title: '型号' },
-    { field: 'detail_no', title: '包装编码', },
+    { field: 'detail_no', title: '包装编码' },
     { field: 'last_user', title: '使用者（最近一次）' },
-    { field: 'reason', title: '备注', },
-    { field: 'status', title: '状态', cellRender:{
-      name: 'CellSelectLabel',
-      props:{
-        options: damageReportStatusOptions
-      }
-    }},
+    { field: 'reason', title: '备注' },
+    {
+      field: 'status',
+      title: '状态',
+      cellRender: {
+        name: 'CellSelectLabel',
+        props: {
+          options: damageReportStatusOptions,
+        },
+      },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -72,7 +76,7 @@ const gridOptions: VxeGridProps<RowType> = {
         return await getRepairVerifyList({
           page: page.currentPage,
           per_page: page.pageSize,
-          ...formValues
+          ...formValues,
         });
       },
     },
@@ -87,8 +91,6 @@ const formOptions: VbenFormProps = {
       fieldName: 'type_name',
       label: '型号',
     },
-    
-
   ],
   // 控制表单是否显示折叠按钮
   showCollapseButton: true,
@@ -101,41 +103,35 @@ const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
 // 新增
 const handleAdd = () => {
-  handleSetData({},'新增');
+  handleSetData({}, '新增');
 };
 // 编辑
 function handleEditRow(row: RowType) {
-  ElMessage.success('操作成功')
+  ElMessage.success('操作成功');
 }
-
 
 const handleSetData = (row: RowType, title: string) => {
   drawerApi
     .setData({
       values: { ...row },
-    }).setState({
-      title
+    })
+    .setState({
+      title,
     })
     .open();
 };
 
 const handleSendRow = (row: RowType) => {
-  ElMessageBox.confirm(
-    '是否确认寄出？',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  ).then(async () => {
-    await sendRepair([row.id])
+  ElMessageBox.confirm('是否确认寄出？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    await sendRepair(row.id);
     gridApi.reload();
     ElMessage.success('操作成功');
-  })
-}
-
-
+  });
+};
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
@@ -144,13 +140,17 @@ const handleSendRow = (row: RowType) => {
       <!-- <ElButton type="primary" @click="handleToDetail()"> 导入 </ElButton> -->
     </template>
     <Grid>
-
-            <template #action="{ row }">
-              <ElButton type="primary" link @click="handleSendRow(row)">
-                寄出
-              </ElButton>
-            </template>
-          </Grid>
+      <template #action="{ row }">
+        <ElButton
+          type="primary"
+          v-if="row.status == 1"
+          link
+          @click="handleSendRow(row)"
+        >
+          寄出
+        </ElButton>
+      </template>
+    </Grid>
 
     <Drawer />
   </Page>

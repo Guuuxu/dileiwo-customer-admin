@@ -48,7 +48,8 @@ export const useAuthStore = defineStore('auth', () => {
         userInfo = fetchUserInfoResult;
 
         userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
+        console.log('accessCodes', accessCodes);
+        accessStore.setAccessCodes(accessCodes.roles);
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);

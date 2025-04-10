@@ -18,18 +18,6 @@ const CODE_LENGTH = 6;
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
-      component: 'Select',
-      fieldName: 'type',
-      label: '注册类型',
-      componentProps: {
-        options: [
-          { label: '租赁/购买方', value: 1 },
-          { label: '中转使用方', value: 2 },
-        ],
-      },
-      rules: 'required',
-    },
-    {
       component: 'Divider',
       fieldName: '_divider',
       formItemClass: 'col-span-1',

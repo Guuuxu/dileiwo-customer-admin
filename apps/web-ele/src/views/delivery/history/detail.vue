@@ -52,8 +52,8 @@ const gridOptions: VxeGridProps<RowType> = {
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
     // { field: 'category', title: '型号' },
     { field: 'detail_no', title: '包装编码' },
-    { field: 'limit_count', title: '总循环次数', width: 70 },
-    { field: 'month_limit', title: '单月已用', width: 70 },
+    { field: 'month_limit', title: '总循环次数', width: 70 },
+    { field: 'limit_count', title: '单月已用', width: 70 },
     { field: 'remain_count', title: '单月剩余用量', width: 70 },
     {
       field: 'status',
@@ -61,7 +61,11 @@ const gridOptions: VxeGridProps<RowType> = {
       width: 60,
       slots: {
         default: ({ row }) => {
-          return row.status == '1' ? '出库' : '回收';
+          return row.status == 1
+            ? '已回收'
+            : row.status == 2
+              ? '已损坏'
+              : '已出库';
         },
       },
     },
@@ -94,13 +98,7 @@ const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 </script>
 <template>
   <Drawer>
-    <Grid>
-      <template #status="{ row }">
-        <el-tag :type="row.status ? 'success' : 'danger'">
-          {{ row.status ? '出库' : '' }}
-        </el-tag>
-      </template>
-    </Grid>
+    <Grid> </Grid>
   </Drawer>
 </template>
 <style lang="scss" scoped>

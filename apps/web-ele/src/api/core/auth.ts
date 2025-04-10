@@ -54,7 +54,8 @@ export async function logoutApi() {
  * 获取用户权限码
  */
 export async function getAccessCodesApi() {
-  return []
+  // return requestClient.get<string[]>('/auth/codes');
+  return requestClient.get<string[]>('/web/user');
 }
 
 // ======= 初始认证 ========
@@ -100,7 +101,7 @@ export async function handleAuthScan(outbound: number, detail_no: string) {
 /**
  * 扫描结果
  * @param params 查询参数
- * 
+ *
  */
 export async function handleAuthScanResult(outbound: number) {
   return requestClient.get<any>(`/web/bound/inbound/${outbound}/inboundResult`);
@@ -108,7 +109,7 @@ export async function handleAuthScanResult(outbound: number) {
 
 /**
  * 回收扫描
- * @param 
+ * @param
  * @param detail_no 详情编码
  */
 export async function handleRecycleScan(detail_no: string) {
