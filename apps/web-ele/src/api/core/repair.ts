@@ -40,16 +40,6 @@ export function getRepairDetail(id: string) {
 }
 
 /**
- * 损坏认证
- * @param id - 损坏记录的唯一标识
- * @param data - 包含认证信息的对象
- * @returns
- */
-export function certifyRepair(id: number) {
-  return requestClient.post(`/web/repair/${id}/vertify`);
-}
-
-/**
  * 寄出
  * @param id - 损坏记录的唯一标识
  * @returns
