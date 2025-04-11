@@ -132,6 +132,10 @@ const handleSendRow = (row: RowType) => {
     ElMessage.success('操作成功');
   });
 };
+
+const handleUpdate = () => {
+  gridApi.reload();
+}
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
@@ -152,6 +156,6 @@ const handleSendRow = (row: RowType) => {
       </template>
     </Grid>
 
-    <Drawer />
+    <Drawer @onUpdated="handleUpdate" />
   </Page>
 </template>

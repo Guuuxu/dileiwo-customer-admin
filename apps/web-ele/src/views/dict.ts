@@ -31,4 +31,5 @@ export const damageReportStatusOptions = [
   { label: '待验证', value: 0 },
   { label: '已验证', value: 1 },
   { label: '已寄出', value: 2 },
+  { label: '已完成', value: 3 },
 ];

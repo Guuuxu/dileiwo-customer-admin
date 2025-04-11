@@ -79,9 +79,9 @@ const formOptions: VbenFormProps = {
       label: '类型',
       componentProps: {
         options: [
-          { label: '出库', value: '1' },
-          { label: '回收', value: '2' },
-          { label: '损坏', value: '3' },
+          { label: '回收', value: '1' },
+          { label: '损坏', value: '2' },
+          { label: '出库', value: '3' },
         ],
       },
     },
@@ -145,9 +145,9 @@ const handleDeleteRow = (row: RowType) => {
     </template>
     <Grid>
       <template #type="{ row }">
-        <span v-if="row.type == '1'">出库</span>
-        <span v-if="row.type == '2'">回收</span>
-        <span v-if="row.type == '3'">损坏</span>
+        <span v-if="row.type == '1'">回收</span>
+        <span v-if="row.type == '2'">损坏</span>
+        <span v-if="row.type == '3'">出库</span>
       </template>
     </Grid>
 

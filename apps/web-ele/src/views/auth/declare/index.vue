@@ -74,6 +74,8 @@ const [Form, formApi] = useVbenForm({
         action: apiURL + '/web/upload',
         accept: 'image/*',
         name: 'file',
+        
+        fit:'cover',
         listType: 'picture-card',
         showUploadList: false,
         beforeUpload: (file: File) => {
@@ -93,11 +95,7 @@ const [Form, formApi] = useVbenForm({
           console.log(res, file);
           if (res.code === 200) {
             main_img.value = res.data.url;
-          } else {
-            ElMessage.error({
-              message: $t('ui.formRules.fileUploadError'),
-            });
-          }
+          } 
         },
       },
       fieldName: 'main_img',
@@ -119,6 +117,8 @@ const [Form, formApi] = useVbenForm({
         action: apiURL + '/web/upload',
         accept: 'image/*',
         name: 'file',
+        
+        fit:'cover',
         listType: 'picture-card',
         showUploadList: false,
         beforeUpload: (file: File) => {
@@ -164,6 +164,8 @@ const [Form, formApi] = useVbenForm({
         action: apiURL + '/web/upload',
         accept: 'image/*',
         name: 'file',
+        
+        fit:'cover',
         listType: 'picture-card',
         showUploadList: false,
         beforeUpload: (file: File) => {

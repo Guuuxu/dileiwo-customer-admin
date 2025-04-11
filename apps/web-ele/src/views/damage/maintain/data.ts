@@ -1,4 +1,7 @@
 import type { VbenFormSchema } from '#/adapter/form';
+import { ref } from 'vue';
+import { useAppConfig } from '@vben/hooks';
+const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
 import { damageReasons } from '#/views/dict';
 import { $t } from '#/locales';
@@ -11,6 +14,13 @@ export function useSchema(): VbenFormSchema[] {
   return [];
 }
 
+
+export const mainImg = ref('');
+export const firstImg = ref('');
+export const secondImg = ref('');
+/**
+ * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
+**/
 export function useSchemaReason(): VbenFormSchema[] {
   return [
     {
@@ -51,8 +61,9 @@ export function useSchemaReason(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请上传文件',
         class: 'avatar-uploader',
-        action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+        action: apiURL + '/web/upload',
         accept: 'image/*',
+        name: 'file',
         listType: 'picture-card',
         multiple: true,
         showUploadList: false,
@@ -69,18 +80,14 @@ export function useSchemaReason(): VbenFormSchema[] {
           }
           return isJPG || isPNG || isGIF;
         },
-        handleAvatarSuccess: (res: any, file: File) => {
+        onSuccess: (res: any, file: File) => {
           console.log(res, file);
-          if (res.code === 0) {
-            // globalShareState.set('avatarUrl', res.data.url);
-          } else {
-            ElMessage.error({
-              message: $t('ui.formRules.fileUploadError'),
-            });
-          }
+          if (res.code === 200) {
+            mainImg.value = res.data.url;
+          } 
         },
       },
-      fieldName: 'photo',
+      fieldName: 'main_img',
       label: '包装整体含编码图',
       labelWidth: 120, // 设置label宽度
       renderComponentContent: () => {
@@ -94,8 +101,9 @@ export function useSchemaReason(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请上传文件',
         class: 'avatar-uploader',
-        action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
+        action: apiURL + '/web/upload',
         accept: 'image/*',
+        name: 'file',
         listType: 'picture-card',
         multiple: true,
         showUploadList: false,
@@ -112,20 +120,56 @@ export function useSchemaReason(): VbenFormSchema[] {
           }
           return isJPG || isPNG || isGIF;
         },
-        handleAvatarSuccess: (res: any, file: File) => {
+        onSuccess: (res: any, file: File) => {
           console.log(res, file);
-          if (res.code === 0) {
-            // globalShareState.set('avatarUrl', res.data.url);
-          } else {
-            ElMessage.error({
-              message: $t('ui.formRules.fileUploadError'),
-            });
+          if (res.code === 200) {
+            firstImg.value = res.data.url;
           }
         },
       },
-      fieldName: 'photo2',
+      fieldName: 'first_img',
       labelWidth: 120, // 设置label宽度
       label: '包装瑕疵细部图',
+      renderComponentContent: () => {
+        return {
+          default: () => '+',
+        };
+      },
+    },
+    {
+      component: 'Upload',
+      componentProps: {
+        placeholder: '请上传文件',
+        class: 'avatar-uploader',
+        action: apiURL + '/web/upload',
+        accept: 'image/*',
+        name: 'file',
+        listType: 'picture-card',
+        multiple: true,
+        showUploadList: false,
+        beforeUpload: (file: File) => {
+          console.log(file);
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isGIF = file.type === 'image/gif';
+
+          if (!isJPG && !isPNG && !isGIF) {
+            ElMessage.error({
+              message: $t('ui.formRules.fileTypeError'),
+            });
+          }
+          return isJPG || isPNG || isGIF;
+        },
+        onSuccess: (res: any, file: File) => {
+          console.log(res, file);
+          if (res.code === 200) {
+            secondImg.value = res.data.url;
+          }
+        },
+      },
+      fieldName: 'second_img',
+      labelWidth: 120, // 设置label宽度
+      label: '包装瑕疵细部图2',
       renderComponentContent: () => {
         return {
           default: () => '+',

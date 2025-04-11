@@ -6,10 +6,17 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 
-import { useSchema, useSchemaReason } from './data';
+import {
+  useSchema,
+  useSchemaReason,
+  mainImg,
+  firstImg,
+  secondImg,
+} from './data';
 import { ElMessage } from 'element-plus';
 import { scanRepair, updateRepair, getRepairDetail } from '#/api';
-
+// 定义自定义事件
+const emits = defineEmits(['onUpdated']);
 defineOptions({
   name: 'FormDrawer',
 });
@@ -66,19 +73,27 @@ const [Drawer, drawerApi] = useVbenDrawer({
       const { valid } = await BaseFormApi.validate();
       if (valid) {
         const formValues = await BaseFormApi.getValues();
-        console.log(formValues);
-        updateRepair({ ...formValues, model_detail_id: detail.value.id }).then(
-          (res) => {
-            ElMessage.success('操作完成！');
-            drawerApi.close();
-          },
-        );
+       
       }
     } else {
+      
       const { valid } = await BaseFormApi2.validate();
       if (valid) {
         const formValues = await BaseFormApi2.getValues();
-        console.log(formValues);
+        const params = {
+          ...formValues,
+          model_detail_id: detail.value.id,
+          main_img:mainImg.value,
+          first_img: firstImg.value,
+          second_img: secondImg.value,
+        };
+
+        console.log(params);
+        updateRepair(params).then((res) => {
+          ElMessage.success('操作完成！');
+          emits('onUpdated');
+          drawerApi.close();
+        });
       }
     }
   },
