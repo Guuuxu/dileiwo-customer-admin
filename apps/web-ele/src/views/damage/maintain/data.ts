@@ -65,7 +65,6 @@ export function useSchemaReason(): VbenFormSchema[] {
         accept: 'image/*',
         name: 'file',
         listType: 'picture-card',
-        multiple: true,
         showUploadList: false,
         beforeUpload: (file: File) => {
           console.log(file);
@@ -105,7 +104,6 @@ export function useSchemaReason(): VbenFormSchema[] {
         accept: 'image/*',
         name: 'file',
         listType: 'picture-card',
-        multiple: true,
         showUploadList: false,
         beforeUpload: (file: File) => {
           console.log(file);
@@ -145,7 +143,6 @@ export function useSchemaReason(): VbenFormSchema[] {
         accept: 'image/*',
         name: 'file',
         listType: 'picture-card',
-        multiple: true,
         showUploadList: false,
         beforeUpload: (file: File) => {
           console.log(file);
