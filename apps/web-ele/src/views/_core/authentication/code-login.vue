@@ -16,7 +16,8 @@ const router = useRouter();
 
 const loading = ref(false);
 const CODE_LENGTH = 6;
-
+// 定义表单引用
+const form = ref<InstanceType<typeof AuthenticationCodeLogin>>();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
@@ -39,18 +40,29 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {
         codeLength: CODE_LENGTH,
         createText: (countdown: number) => {
+          const values = getFormValues();
+          console.log('Current phone number:', getFormValues());
+          const phone = values.phone;
+
           const text =
-            countdown > 0
+            countdown > 0 && phone && /^\d{11}$/.test(phone)
               ? $t('authentication.sendText', [countdown])
               : $t('authentication.sendCode');
-          return text;
+          return text || $t('authentication.sendCode');
         },
         handleSendCode: async () => {
           // 模拟发送验证码
           // Simulate sending verification code
           loading.value = true;
-          const phone = formSchema.value.find((item) => item.fieldName === 'phone')?.defaultValue;
-          console.log('Current phone number:', phone);
+          const values = getFormValues();
+          console.log('Current phone number:', getFormValues());
+          const phone = values.phone;
+          // 验证手机号是否填写且格式正确
+          if (!phone || !/^\d{11}$/.test(phone)) {
+                ElMessage.warning($t('authentication.mobileErrortip'));
+                loading.value = false;
+                return;
+              }
           try {
             await sendSmsApi(phone)
             ElMessage.success('已发送');
@@ -81,6 +93,16 @@ async function handleLogin(values: Recordable<any>) {
   console.log(values);
 
 }
+// 定义获取表单值的方法
+async function getFormValues() {
+  if (form.value) {
+    const formApi = form.value.getFormApi();
+    const values = await formApi.getValues();
+    console.log('Form values:', values);
+    return values;
+  }
+  return null;
+}
 const goReg = ()=>{
   router.push('/auth/register');
 }
@@ -89,6 +111,7 @@ const goReg = ()=>{
 <template>
   <div>
     <AuthenticationCodeLogin
+    ref="form"
     :form-schema="formSchema"
     :loading="authStore.loginLoading"
     @submit="authStore.authLogin"
