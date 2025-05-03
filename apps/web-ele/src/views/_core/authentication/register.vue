@@ -8,7 +8,7 @@ const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 import { ElButton, ElMessage, ElIcon, ElUpload } from 'element-plus';
 import { Plus } from '@vben/icons';
 import { AuthenticationRegister, z } from '@vben/common-ui';
-import { handleRegister } from '#/api';
+import { handleRegister, sendSmsApi } from '#/api';
 import { $t } from '@vben/locales';
 const router = useRouter();
 defineOptions({ name: 'Register' });
@@ -84,7 +84,7 @@ const formSchema = computed((): VbenFormSchema[] => {
             throw new Error('Phone number is not Ready');
           }
           const { phoneNumber } = await BaseFormApi.getValues();
-          // await sendCodeApi(phoneNumber);
+          await sendSmsApi(phoneNumber);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
@@ -144,7 +144,7 @@ const formSchema = computed((): VbenFormSchema[] => {
             throw new Error('Phone number is not Ready');
           }
           const { phoneNumber } = await BaseFormApi.getValues();
-          // await sendCodeApi(phoneNumber);
+          await sendSmsApi(phoneNumber);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),

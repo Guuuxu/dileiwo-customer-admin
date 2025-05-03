@@ -24,7 +24,7 @@ const countryCodes = ref([
     regex: /^1[3-9]\d{9}$/,
   },
   {
-    label: '+888 台湾地区(中国)',
+    label: '+886 台湾地区(中国)',
     value: '+886', // 台湾手机号一般为 09 开头的 10 位数字，去掉 0 后是 9 位
     regex: /^9\d{8}$/,
   },
@@ -43,6 +43,8 @@ const countryCodes = ref([
 ]);
 // 默认选中的国际编码
 const selectedCountryCode = ref(countryCodes.value?.[0]?.value || '');
+// 定义表单引用
+const form = ref<InstanceType<typeof AuthenticationCodeLogin>>();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
@@ -67,8 +69,10 @@ const formSchema = computed((): VbenFormSchema[] => {
         .min(1, { message: $t('authentication.mobileTip') })
         // 根据不同国际编码调整正则表达式，这里以中国为例
         .refine((v) => {
+          const values = getFormValues();
+          console.log('Current phone number:', values);
           const currentCountryCode = countryCodes.value.find(
-            item => item.value === selectedCountryCode.value
+            item => item.value === values?.countryCode
           );
           console.log('currentCountryCode', currentCountryCode)
           if (currentCountryCode) {
@@ -84,20 +88,27 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {
         codeLength: CODE_LENGTH,
         createText: (countdown: number) => {
+          const values = getFormValues();
+          const phone = values.phone;
+
           const text =
-            countdown > 0
+            countdown > 0 && phone && /^\d{11}$/.test(phone)
               ? $t('authentication.sendText', [countdown])
               : $t('authentication.sendCode');
-          return text;
+          return text || $t('authentication.sendCode');
         },
         handleSendCode: async () => {
           // 模拟发送验证码
           // Simulate sending verification code
           loading.value = true;
-          const phone = formSchema.value.find(
-            (item) => item.fieldName === 'phone',
-          )?.defaultValue;
-          console.log('Current phone number:', phone);
+          const values = getFormValues();
+          const phone = values.phone;
+          // 验证手机号是否填写且格式正确
+          if (!phone || !/^\d{11}$/.test(phone)) {
+                ElMessage.warning($t('authentication.mobileErrortip'));
+                loading.value = false;
+                return;
+              }
           try {
             await sendSmsApi(phone);
             ElMessage.success('已发送');
@@ -127,7 +138,18 @@ async function handleLogin(values: Recordable<any>) {
   // eslint-disable-next-line no-console
   console.log(values);
 }
-const goReg = () => {
+
+// 定义获取表单值的方法
+async function getFormValues() {
+  if (form.value) {
+    const formApi = form.value.getFormApi();
+    const values = await formApi.getValues();
+    console.log('Form values:', values);
+    return values;
+  }
+  return null;
+}
+const goReg = ()=>{
   router.push('/auth/register');
 };
 </script>
@@ -135,12 +157,13 @@ const goReg = () => {
 <template>
   <div>
     <AuthenticationCodeLogin
-      :form-schema="formSchema"
-      :loading="authStore.loginLoading"
-      @submit="authStore.authLogin"
-    />
-    <div class="mt-3 w-full text-right" type="primary" @click="goReg()">
-      新商户注册
-    </div>
+    ref="form"
+    :form-schema="formSchema"
+    :loading="authStore.loginLoading"
+    @submit="authStore.authLogin"
+  />
+  <div  class="w-full mt-3 text-right" type="primary" @click="goReg()">
+    新商户注册
+  </div>
   </div>
 </template>
