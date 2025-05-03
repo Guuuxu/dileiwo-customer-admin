@@ -243,7 +243,7 @@ function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
       </template>
       <template #description> 今日晴，20℃ - 32℃！ </template>
     </WorkbenchHeader>
-
+    
     <div class="mt-5 flex flex-col lg:flex-row"></div>
   </div>
 </template>

@@ -16,9 +16,44 @@ const router = useRouter();
 
 const loading = ref(false);
 const CODE_LENGTH = 6;
+// 定义国际编码选项
+const countryCodes = ref([
+  {
+    label: '+86 中国',
+    value: '+86', // 中国大陆手机号码 11 位，以 1 开头
+    regex: /^1[3-9]\d{9}$/,
+  },
+  {
+    label: '+888 台湾地区(中国)',
+    value: '+886', // 台湾手机号一般为 09 开头的 10 位数字，去掉 0 后是 9 位
+    regex: /^9\d{8}$/,
+  },
+  {
+    label: '+852 香港特别行政区(中国)',
+    value: '+852', // 香港手机号为 8 位数字
+    regex: /^\d{8}$/,
+  },
+  {
+    label: '+853 澳门特别行政区(中国)',
+    value: '+853', // 澳门手机号为 8 位数字
+    regex: /^\d{8}$/,
+  },
 
+  // 可按需添加更多国际编码
+]);
+// 默认选中的国际编码
+const selectedCountryCode = ref(countryCodes.value?.[0]?.value || '');
 const formSchema = computed((): VbenFormSchema[] => {
   return [
+    {
+      component: 'VbenSelect',
+      componentProps: {
+        options: countryCodes.value,
+      },
+      fieldName: 'countryCode',
+      label: '国际编码',
+      defaultValue: selectedCountryCode.value,
+    },
     {
       component: 'VbenInput',
       componentProps: {
@@ -30,7 +65,17 @@ const formSchema = computed((): VbenFormSchema[] => {
       rules: z
         .string()
         .min(1, { message: $t('authentication.mobileTip') })
-        .refine((v) => /^\d{11}$/.test(v), {
+        // 根据不同国际编码调整正则表达式，这里以中国为例
+        .refine((v) => {
+          const currentCountryCode = countryCodes.value.find(
+            item => item.value === selectedCountryCode.value
+          );
+          console.log('currentCountryCode', currentCountryCode)
+          if (currentCountryCode) {
+            return currentCountryCode.regex.test(v);
+          }
+          return false;
+        }, {
           message: $t('authentication.mobileErrortip'),
         }),
     },
@@ -49,13 +94,15 @@ const formSchema = computed((): VbenFormSchema[] => {
           // 模拟发送验证码
           // Simulate sending verification code
           loading.value = true;
-          const phone = formSchema.value.find((item) => item.fieldName === 'phone')?.defaultValue;
+          const phone = formSchema.value.find(
+            (item) => item.fieldName === 'phone',
+          )?.defaultValue;
           console.log('Current phone number:', phone);
           try {
-            await sendSmsApi(phone)
+            await sendSmsApi(phone);
             ElMessage.success('已发送');
             loading.value = false;
-          }catch (error) {
+          } catch (error) {
             loading.value = false;
             console.error('Error sending verification code:', error);
           }
@@ -79,22 +126,21 @@ const formSchema = computed((): VbenFormSchema[] => {
 async function handleLogin(values: Recordable<any>) {
   // eslint-disable-next-line no-console
   console.log(values);
-
 }
-const goReg = ()=>{
+const goReg = () => {
   router.push('/auth/register');
-}
+};
 </script>
 
 <template>
   <div>
     <AuthenticationCodeLogin
-    :form-schema="formSchema"
-    :loading="authStore.loginLoading"
-    @submit="authStore.authLogin"
-  />
-  <div  class="w-full mt-3 text-right" type="primary" @click="goReg()">
-    新商户注册
-  </div>
+      :form-schema="formSchema"
+      :loading="authStore.loginLoading"
+      @submit="authStore.authLogin"
+    />
+    <div class="mt-3 w-full text-right" type="primary" @click="goReg()">
+      新商户注册
+    </div>
   </div>
 </template>
