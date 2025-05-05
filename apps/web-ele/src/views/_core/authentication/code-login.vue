@@ -47,15 +47,15 @@ const selectedCountryCode = ref(countryCodes.value?.[0]?.value || '');
 const form = ref<InstanceType<typeof AuthenticationCodeLogin>>();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
-    {
-      component: 'VbenSelect',
-      componentProps: {
-        options: countryCodes.value,
-      },
-      fieldName: 'countryCode',
-      label: '国际编码',
-      defaultValue: selectedCountryCode.value,
-    },
+    // {
+    //   component: 'VbenSelect',
+    //   componentProps: {
+    //     options: countryCodes.value,
+    //   },
+    //   fieldName: 'countryCode',
+    //   label: '国际编码',
+    //   defaultValue: selectedCountryCode.value,
+    // },
     {
       component: 'VbenInput',
       componentProps: {
@@ -68,12 +68,10 @@ const formSchema = computed((): VbenFormSchema[] => {
         .string()
         .min(1, { message: $t('authentication.mobileTip') })
         // 根据不同国际编码调整正则表达式，这里以中国为例
-        .refine((v) => {
-          const values = getFormValues();
+        .refine(async (v) => {
+          const values = await getFormValues();
           console.log('Current phone number:', values);
-          const currentCountryCode = countryCodes.value.find(
-            item => item.value === values?.countryCode
-          );
+          const currentCountryCode = selectedCountryCode.value;
           console.log('currentCountryCode', currentCountryCode)
           if (currentCountryCode) {
             return currentCountryCode.regex.test(v);
@@ -101,8 +99,9 @@ const formSchema = computed((): VbenFormSchema[] => {
           // 模拟发送验证码
           // Simulate sending verification code
           loading.value = true;
-          const values = getFormValues();
-          const phone = values.phone;
+          const values = await getFormValues();
+          const phone = values?.phone;
+          console.log('values', values)
           // 验证手机号是否填写且格式正确
           if (!phone || !/^\d{11}$/.test(phone)) {
                 ElMessage.warning($t('authentication.mobileErrortip'));
@@ -110,7 +109,7 @@ const formSchema = computed((): VbenFormSchema[] => {
                 return;
               }
           try {
-            await sendSmsApi(phone);
+            await sendSmsApi(phone, values.countryCode);
             ElMessage.success('已发送');
             loading.value = false;
           } catch (error) {

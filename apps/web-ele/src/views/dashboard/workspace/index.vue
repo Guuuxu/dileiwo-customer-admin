@@ -6,244 +6,183 @@ import type {
   WorkbenchTrendItem,
 } from '@vben/common-ui';
 
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-
-import {
-  AnalysisChartCard,
-  WorkbenchHeader,
-  WorkbenchProject,
-  WorkbenchQuickNav,
-  WorkbenchTodo,
-  WorkbenchTrends,
-} from '@vben/common-ui';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { AnalysisChartCard, WorkbenchHeader } from '@vben/common-ui';
 import { preferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
-import { openWindow } from '@vben/utils';
+import { getHomeData } from '#/api';
+import { ElCard, ElRow, ElCol } from 'element-plus';
+import dayjs from 'dayjs';
 
-import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
+import type { VxeGridProps } from '#/adapter/vxe-table';
 
 const userStore = useUserStore();
 
-// 这是一个示例数据，实际项目中需要根据实际情况进行调整
-// url 也可以是内部路由，在 navTo 方法中识别处理，进行内部跳转
-// 例如：url: /dashboard/workspace
-const projectItems: WorkbenchProjectItem[] = [
-  {
-    color: '',
-    content: '不要等待机会，而要创造机会。',
-    date: '2021-04-01',
-    group: '开源组',
-    icon: 'carbon:logo-github',
-    title: 'Github',
-    url: 'https://github.com',
-  },
-  {
-    color: '#3fb27f',
-    content: '现在的你决定将来的你。',
-    date: '2021-04-01',
-    group: '算法组',
-    icon: 'ion:logo-vue',
-    title: 'Vue',
-    url: 'https://vuejs.org',
-  },
-  {
-    color: '#e18525',
-    content: '没有什么才能比努力更重要。',
-    date: '2021-04-01',
-    group: '上班摸鱼',
-    icon: 'ion:logo-html5',
-    title: 'Html5',
-    url: 'https://developer.mozilla.org/zh-CN/docs/Web/HTML',
-  },
-  {
-    color: '#bf0c2c',
-    content: '热情和欲望可以突破一切难关。',
-    date: '2021-04-01',
-    group: 'UI',
-    icon: 'ion:logo-angular',
-    title: 'Angular',
-    url: 'https://angular.io',
-  },
-  {
-    color: '#00d8ff',
-    content: '健康的身体是实现目标的基石。',
-    date: '2021-04-01',
-    group: '技术牛',
-    icon: 'bx:bxl-react',
-    title: 'React',
-    url: 'https://reactjs.org',
-  },
-  {
-    color: '#EBD94E',
-    content: '路是走出来的，而不是空想出来的。',
-    date: '2021-04-01',
-    group: '架构组',
-    icon: 'ion:logo-javascript',
-    title: 'Js',
-    url: 'https://developer.mozilla.org/zh-CN/docs/Web/JavaScript',
-  },
-];
-
-// 同样，这里的 url 也可以使用以 http 开头的外部链接
-const quickNavItems: WorkbenchQuickNavItem[] = [
-  {
-    color: '#1fdaca',
-    icon: 'ion:home-outline',
-    title: '首页',
-    url: '/',
-  },
-  {
-    color: '#bf0c2c',
-    icon: 'ion:grid-outline',
-    title: '仪表盘',
-    url: '/dashboard',
-  },
-  {
-    color: '#e18525',
-    icon: 'ion:layers-outline',
-    title: '组件',
-    url: '/demos/features/icons',
-  },
-  {
-    color: '#3fb27f',
-    icon: 'ion:settings-outline',
-    title: '系统管理',
-    url: '/demos/features/login-expired', // 这里的 URL 是示例，实际项目中需要根据实际情况进行调整
-  },
-  {
-    color: '#4daf1bc9',
-    icon: 'ion:key-outline',
-    title: '权限管理',
-    url: '/demos/access/page-control',
-  },
-  {
-    color: '#00d8ff',
-    icon: 'ion:bar-chart-outline',
-    title: '图表',
-    url: '/analytics',
-  },
-];
-
-const todoItems = ref<WorkbenchTodoItem[]>([
-  {
-    completed: false,
-    content: `审查最近提交到Git仓库的前端代码，确保代码质量和规范。`,
-    date: '2024-07-30 11:00:00',
-    title: '审查前端代码提交',
-  },
-  {
-    completed: true,
-    content: `检查并优化系统性能，降低CPU使用率。`,
-    date: '2024-07-30 11:00:00',
-    title: '系统性能优化',
-  },
-  {
-    completed: false,
-    content: `进行系统安全检查，确保没有安全漏洞或未授权的访问。 `,
-    date: '2024-07-30 11:00:00',
-    title: '安全检查',
-  },
-  {
-    completed: false,
-    content: `更新项目中的所有npm依赖包，确保使用最新版本。`,
-    date: '2024-07-30 11:00:00',
-    title: '更新项目依赖',
-  },
-  {
-    completed: false,
-    content: `修复用户报告的页面UI显示问题，确保在不同浏览器中显示一致。 `,
-    date: '2024-07-30 11:00:00',
-    title: '修复UI显示问题',
-  },
-]);
-const trendItems: WorkbenchTrendItem[] = [
-  {
-    avatar: 'svg:avatar-1',
-    content: `在 <a>开源组</a> 创建了项目 <a>Vue</a>`,
-    date: '刚刚',
-    title: '威廉',
-  },
-  {
-    avatar: 'svg:avatar-2',
-    content: `关注了 <a>威廉</a> `,
-    date: '1个小时前',
-    title: '艾文',
-  },
-  {
-    avatar: 'svg:avatar-3',
-    content: `发布了 <a>个人动态</a> `,
-    date: '1天前',
-    title: '克里斯',
-  },
-  {
-    avatar: 'svg:avatar-4',
-    content: `发表文章 <a>如何编写一个Vite插件</a> `,
-    date: '2天前',
-    title: 'Vben',
-  },
-  {
-    avatar: 'svg:avatar-1',
-    content: `回复了 <a>杰克</a> 的问题 <a>如何进行项目优化？</a>`,
-    date: '3天前',
-    title: '皮特',
-  },
-  {
-    avatar: 'svg:avatar-2',
-    content: `关闭了问题 <a>如何运行项目</a> `,
-    date: '1周前',
-    title: '杰克',
-  },
-  {
-    avatar: 'svg:avatar-3',
-    content: `发布了 <a>个人动态</a> `,
-    date: '1周前',
-    title: '威廉',
-  },
-  {
-    avatar: 'svg:avatar-4',
-    content: `推送了代码到 <a>Github</a>`,
-    date: '2021-04-01 20:00',
-    title: '威廉',
-  },
-  {
-    avatar: 'svg:avatar-4',
-    content: `发表文章 <a>如何编写使用 Admin Vben</a> `,
-    date: '2021-03-01 20:00',
-    title: 'Vben',
-  },
-];
-
-const router = useRouter();
-
-// 这是一个示例方法，实际项目中需要根据实际情况进行调整
-// This is a sample method, adjust according to the actual project requirements
-function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
-  if (nav.url?.startsWith('http')) {
-    openWindow(nav.url);
-    return;
-  }
-  if (nav.url?.startsWith('/')) {
-    router.push(nav.url).catch((error) => {
-      console.error('Navigation failed:', error);
-    });
-  } else {
-    console.warn(`Unknown URL for navigation item: ${nav.title} -> ${nav.url}`);
-  }
+const homeData = ref<any>({});
+const dataList: any = ref([]);
+// 表格配置
+interface RowType {
+  id: number;
+  order_no: string;
+  detail_no: string;
+  rent_time: string;
+  during: string;
+  end_time: string;
 }
+const containerRef = ref<HTMLElement | null>(null);
+const headerHeight = ref(0);
+const cardHeaderHeight = ref(0);
+const gridOptions: VxeGridProps<RowType> = {
+  columns: [
+    // { align: 'left', title: '', type: 'checkbox', width: 40 },
+    { field: 'order_no', title: '单号' },
+    { field: 'detail_no', title: '包装编码' },
+    { field: 'type_name', title: '型号' },
+    { field: 'month_limit', title: '总量' },
+    { field: 'limit_count', title: '单月用量', },
+    { field: 'month_limit_max', title: '单月用量上限' },
+    { field: 'rent_time', title: '起租日',
+      slots: {
+        default: ({ row }) => {
+        // 格式化日期为 YYYY-MM-DD 格式
+        return row.rent_time ? dayjs(row.rent_time).format('YYYY-MM-DD') : '-'; 
+      }
+      }
+     },
+    { field: 'during', title: '租赁时长' },
+    { field: 'end_time', title: '到期日',slots: {
+      default: ({ row }) => {
+        // 格式化日期为 YYYY-MM-DD 格式
+        return row.end_time ? dayjs(row.end_time).format('YYYY-MM-DD') : '-'; 
+      }
+    } },
+  ],
+  data: dataList.value,
+  // 先不设置固定高度
+  height: 'auto',
+  scrollY: {
+    enabled: true,
+    gt: 0,
+  },
+  showOverflow: true,
+  editConfig: {
+    mode: 'row',
+    trigger: 'click',
+  },
+  pagerConfig: {
+    enabled: false
+  },
+  proxyConfig: {
+    
+  },
+};
+const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
+
+// 计算表格高度
+const calculateGridHeight = () => {
+  if (containerRef.value) {
+    const containerHeight = containerRef.value.offsetHeight;
+    // 减去顶部元素和卡片头部的高度
+    const newHeight = containerHeight - headerHeight.value - cardHeaderHeight.value - 150;
+    console.log(newHeight);
+    gridApi.setGridOptions({ height: newHeight });
+  }
+};
+
+// 存储 resize 事件的处理函数
+let resizeHandler: () => void;
+
+onMounted(async () => {
+  const res = await getHomeData();
+  console.log(res);
+  homeData.value = res;
+  gridApi.setGridOptions({ data: res.bound_list });
+
+  // 获取顶部元素和卡片头部的高度
+  const headerElement = document.querySelector('.workbench-header');
+  const cardHeaderElement = document.querySelector('.el-card__header');
+  if (headerElement) headerHeight.value = headerElement.offsetHeight;
+  if (cardHeaderElement) cardHeaderHeight.value = cardHeaderElement.offsetHeight;
+
+  // 初始化计算表格高度
+  calculateGridHeight();
+
+  // 监听窗口大小变化
+  resizeHandler = () => {
+    calculateGridHeight();
+  };
+  window.addEventListener('resize', resizeHandler);
+});
+
+// 组件卸载时移除事件监听器
+onUnmounted(() => {
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler);
+  }
+});
+
 </script>
 
 <template>
-  <div class="p-5">
+  <!-- 添加 ref 引用 -->
+  <div ref="containerRef" class="p-5 flex flex-col ">
     <WorkbenchHeader
       :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
+      class="workbench-header"
     >
       <template #title>
         早安, {{ userStore.userInfo?.realName }}, 开始您一天的工作吧！
       </template>
       <template #description> 今日晴，20℃ - 32℃！ </template>
     </WorkbenchHeader>
+    <el-row class="mt-5" :gutter="20">
+      <el-col :span="16">
+        <el-card>
+          <template #header>
+            <span class="text-lg font-semibold">当前包装使用情况</span>
+          </template>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col items-center">
+              <span class="text-sm text-gray-500">持有包装总数</span>
+              <span class="text-xl font-bold">{{homeData.total_count}}</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-sm text-gray-500">在库包装数量</span>
+              <span class="text-xl font-bold">{{homeData.inbound_count}}</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-sm text-gray-500">出库包装数量</span>
+              <span class="text-xl font-bold">{{homeData.outbound_count}}</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-sm text-gray-500">损坏申报数量</span>
+              <span class="text-xl font-bold">{{homeData.repair_count}}</span>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card>
+          <template #header>
+            <span class="text-lg font-semibold">当前各型号总量</span>
+          </template>
+          <div class="flex items-center justify-around gap-5">
+            <div class="flex flex-col items-center" v-for="(item, index) in homeData.model_list" :key="item.id">
+              <span class="text-sm text-gray-500">{{item.type_name}}</span>
+              <span class="text-xl font-bold">{{item.count}}</span>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
     
-    <div class="mt-5 flex flex-col lg:flex-row"></div>
+    <el-card class="mt-5">
+      <template #header>
+        <span class="text-lg font-semibold">包装租赁/购买详情</span>
+      </template>
+      <Grid class="h-full" />
+    </el-card>
   </div>
 </template>

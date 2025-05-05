@@ -45,8 +45,8 @@ export async function handleRegister(data: any) {
 /**
  * 发送短信验证码
  */
-export async function sendSmsApi(phone: string) {
-  return baseRequestClient.post<{ msg: string; code: number }>('/web/sendSMS', { phone });
+export async function sendSmsApi(phone: string, code: string) {
+  return baseRequestClient.post<{ msg: string; code: number }>('/web/sendSMS', { phone,code });
 }
 
 /**
@@ -68,3 +68,13 @@ export async function uploadImage(file: File) {
     },
   });
 }
+
+/**
+ * 首页数据
+ * @description 首页数据
+ * @param {object} params - 请求参数
+ *
+  */
+export async function getHomeData() {
+  return requestClient.get<{ msg: string; code: number; data: any,bound_list:any}>('/web/index');
+}    
