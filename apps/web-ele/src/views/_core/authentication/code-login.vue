@@ -47,15 +47,15 @@ const selectedCountryCode = ref(countryCodes.value?.[0]?.value || '');
 const form = ref<InstanceType<typeof AuthenticationCodeLogin>>();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
-    // {
-    //   component: 'VbenSelect',
-    //   componentProps: {
-    //     options: countryCodes.value,
-    //   },
-    //   fieldName: 'countryCode',
-    //   label: '国际编码',
-    //   defaultValue: selectedCountryCode.value,
-    // },
+    {
+      component: 'VbenSelect',
+      componentProps: {
+        options: countryCodes.value,
+      },
+      fieldName: 'countryCode',
+      label: '国际编码',
+      defaultValue: selectedCountryCode.value,
+    },
     {
       component: 'VbenInput',
       componentProps: {
@@ -71,7 +71,9 @@ const formSchema = computed((): VbenFormSchema[] => {
         .refine(async (v) => {
           const values = await getFormValues();
           console.log('Current phone number:', values);
-          const currentCountryCode = selectedCountryCode.value;
+          const currentCountryCode = countryCodes.value.find(
+            item => item.value === values?.countryCode
+          );
           console.log('currentCountryCode', currentCountryCode)
           if (currentCountryCode) {
             return currentCountryCode.regex.test(v);
