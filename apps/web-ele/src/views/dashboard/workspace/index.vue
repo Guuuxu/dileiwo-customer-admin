@@ -47,7 +47,7 @@ const gridOptions: VxeGridProps<RowType> = {
       slots: {
         default: ({ row }) => {
         // 格式化日期为 YYYY-MM-DD 格式
-        return row.rent_time ? dayjs(row.rent_time).format('YYYY-MM-DD') : '-'; 
+        return row.rent_time ? dayjs(row.rent_time).format('YYYY-MM-DD') : '-';
       }
       }
      },
@@ -55,7 +55,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'end_time', title: '到期日',slots: {
       default: ({ row }) => {
         // 格式化日期为 YYYY-MM-DD 格式
-        return row.end_time ? dayjs(row.end_time).format('YYYY-MM-DD') : '-'; 
+        return row.end_time ? dayjs(row.end_time).format('YYYY-MM-DD') : '-';
       }
     } },
   ],
@@ -75,7 +75,7 @@ const gridOptions: VxeGridProps<RowType> = {
     enabled: false
   },
   proxyConfig: {
-    
+
   },
 };
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
@@ -168,7 +168,7 @@ onUnmounted(() => {
           <template #header>
             <span class="text-lg font-semibold">当前各型号总量</span>
           </template>
-          <div class="flex items-center justify-around gap-5">
+          <div class="flex items-center justify-between  gap-5 flex-wrap">
             <div class="flex flex-col items-center" v-for="(item, index) in homeData.model_list" :key="item.id">
               <span class="text-sm text-gray-500">{{item.type_name}}</span>
               <span class="text-xl font-bold">{{item.count}}</span>
@@ -177,7 +177,7 @@ onUnmounted(() => {
         </el-card>
       </el-col>
     </el-row>
-    
+
     <el-card class="mt-5">
       <template #header>
         <span class="text-lg font-semibold">包装租赁/购买详情</span>

@@ -120,25 +120,6 @@ const formOptions: VbenFormProps = {
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
 
-// 模拟行数据
-const loadList = (size = 200) => {
-  try {
-    // const dataList: RowType[] = [];
-    for (let i = 0; i < size; i++) {
-      dataList.value.push({
-        id: 10_000 + i,
-        createTime: '2025-01-03',
-        amount: '100',
-        type: 'DR-3',
-        remark: '备注一下',
-      });
-    }
-    // gridApi.setGridOptions({ data: dataList });
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    // Implement user-friendly error handling
-  }
-};
 
 // 编辑
 function handleEditRow(row: RowType) {

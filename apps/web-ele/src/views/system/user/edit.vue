@@ -72,15 +72,15 @@ const [BaseForm, BaseFormApi] = useVbenForm({
             loading.value = false;
             throw new Error('formApi is not ready');
           }
-          const isPhoneReady = await BaseFormApi.isFieldValid('law_phone');
+          const isPhoneReady = await BaseFormApi.isFieldValid('phone');
           console.log('isPhoneReady', isPhoneReady);
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { law_phone } = await BaseFormApi.getValues();
+          const { phone } = await BaseFormApi.getValues();
           try {
-            await sendSmsApi(law_phone);
+            await sendSmsApi(phone);
             ElMessage.success('已发送');
           } catch (error) {
             loading.value = false;

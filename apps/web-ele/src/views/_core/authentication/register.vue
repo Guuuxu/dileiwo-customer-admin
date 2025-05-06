@@ -77,14 +77,14 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('formApi is not ready');
           }
-          await BaseFormApi.validateField('phoneNumber');
-          const isPhoneReady = await BaseFormApi.isFieldValid('phoneNumber');
+          await BaseFormApi.validateField('law_phone');
+          const isPhoneReady = await BaseFormApi.isFieldValid('law_phone');
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { phoneNumber } = await BaseFormApi.getValues();
-          await sendSmsApi(phoneNumber);
+          const { law_phone } = await BaseFormApi.getValues();
+          await sendSmsApi(law_phone);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
@@ -137,14 +137,14 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('formApi is not ready');
           }
-          await BaseFormApi.validateField('phoneNumber');
-          const isPhoneReady = await BaseFormApi.isFieldValid('phoneNumber');
+          await BaseFormApi.validateField('admin_phone');
+          const isPhoneReady = await BaseFormApi.isFieldValid('admin_phone');
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { phoneNumber } = await BaseFormApi.getValues();
-          await sendSmsApi(phoneNumber);
+          const { admin_phone } = await BaseFormApi.getValues();
+          await sendSmsApi(admin_phone);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
