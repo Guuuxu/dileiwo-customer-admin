@@ -14,14 +14,13 @@ import {
 } from 'element-plus';
 import { Plus } from '@vben/icons';
 import { useVbenForm } from '#/adapter/form';
-import { sendSmsApi } from '#/api';
+import { countryCodeOptions } from '#/views/dict'
+import { sendSmsApi,editClient } from '#/api';
 defineOptions({
   name: 'FormDrawer',
 });
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { regionData } from '#/utils/index';
-import { editClient } from '#/api';
 
 const loading = ref(false);
 const CODE_LENGTH = 6;
@@ -42,7 +41,15 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       fieldName: 'img',
       label: '企业图示',
     },
-
+    {
+      component: 'VbenSelect',
+      componentProps: {
+        options: countryCodeOptions,
+      },
+      fieldName: 'law_countryCode',
+      label: '国际编码',
+      defaultValue: countryCodeOptions?.[0]?.value || '',
+    },
     {
       component: 'Input',
       componentProps: {
@@ -50,7 +57,24 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       },
       fieldName: 'phone',
       label: '法人手机号',
-      rules: 'required',
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.mobileTip') })
+        // 根据不同国际编码调整正则表达式，这里以中国为例
+        .refine(async (v) => {
+          const { law_countryCode } = await BaseFormApi.getValues();
+          console.log('Current law_countryCode:', law_countryCode);
+          const currentCountryCode = countryCodeOptions.find(
+            item => item.value === law_countryCode
+          );
+          console.log('currentCountryCode', currentCountryCode)
+          if (currentCountryCode) {
+            return currentCountryCode.regex.test(v);
+          }
+          return false;
+        }, {
+          message: $t('authentication.mobileErrortip'),
+        }),
     },
     {
       component: 'VbenPinInput',
@@ -78,9 +102,9 @@ const [BaseForm, BaseFormApi] = useVbenForm({
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { phone } = await BaseFormApi.getValues();
+          const { phone,law_countryCode } = await BaseFormApi.getValues();
           try {
-            await sendSmsApi(phone);
+            await sendSmsApi(phone,law_countryCode);
             ElMessage.success('已发送');
           } catch (error) {
             loading.value = false;

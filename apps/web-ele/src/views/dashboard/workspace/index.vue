@@ -137,7 +137,7 @@ onUnmounted(() => {
       </template>
       <template #description> 今日晴，20℃ - 32℃！ </template>
     </WorkbenchHeader>
-    <el-row class="mt-5" :gutter="20">
+    <el-row class="mt-5 stats-row" :gutter="20">
       <el-col :span="16">
         <el-card>
           <template #header>
@@ -168,8 +168,8 @@ onUnmounted(() => {
           <template #header>
             <span class="text-lg font-semibold">当前各型号总量</span>
           </template>
-          <div class="flex items-center justify-between  gap-5 flex-wrap">
-            <div class="flex flex-col items-center" v-for="(item, index) in homeData.model_list" :key="item.id">
+          <div class="flex items-center gap-5 overflow-x-auto">
+            <div class="model-item flex flex-col items-center" v-for="(item, index) in homeData.model_list" :key="item.id">
               <span class="text-sm text-gray-500">{{item.type_name}}</span>
               <span class="text-xl font-bold">{{item.count}}</span>
             </div>
@@ -186,3 +186,15 @@ onUnmounted(() => {
     </el-card>
   </div>
 </template>
+<style lang="scss" scoped>
+.stats-row {
+  :deep(.el-card__body){
+    box-sizing: border-box;
+    min-height: 100px;
+  }
+}
+
+  .model-item{
+    padding: 0 5px;
+  }
+</style>

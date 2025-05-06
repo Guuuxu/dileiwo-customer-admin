@@ -10,6 +10,7 @@ import { Plus } from '@vben/icons';
 import { AuthenticationRegister, z } from '@vben/common-ui';
 import { handleRegister, sendSmsApi } from '#/api';
 import { $t } from '@vben/locales';
+import { countryCodeOptions } from '#/views/dict'
 const router = useRouter();
 defineOptions({ name: 'Register' });
 
@@ -53,10 +54,36 @@ const formSchema = computed((): VbenFormSchema[] => {
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
     },
     {
+      component: 'VbenSelect',
+      componentProps: {
+        options: countryCodeOptions,
+      },
+      fieldName: 'law_countryCode',
+      label: '国际编码',
+      defaultValue: countryCodeOptions?.[0]?.value || '',
+    },
+    {
       component: 'Input',
       fieldName: 'law_phone',
       label: '手机号',
-      rules: 'required',
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.mobileTip') })
+        // 根据不同国际编码调整正则表达式，这里以中国为例
+        .refine(async (v) => {
+          const { law_countryCode } = await BaseFormApi.getValues();
+          console.log('Current law_countryCode:', law_countryCode);
+          const currentCountryCode = countryCodeOptions.find(
+            item => item.value === law_countryCode
+          );
+          console.log('currentCountryCode', currentCountryCode)
+          if (currentCountryCode) {
+            return currentCountryCode.regex.test(v);
+          }
+          return false;
+        }, {
+          message: $t('authentication.mobileErrortip'),
+        }),
     },
     {
       component: 'VbenPinInput',
@@ -83,8 +110,8 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { law_phone } = await BaseFormApi.getValues();
-          await sendSmsApi(law_phone);
+          const { law_phone,law_countryCode } = await BaseFormApi.getValues();
+          await sendSmsApi(law_phone,law_countryCode);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
@@ -114,9 +141,36 @@ const formSchema = computed((): VbenFormSchema[] => {
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
     },
     {
+      component: 'VbenSelect',
+      componentProps: {
+        options: countryCodeOptions,
+      },
+      fieldName: 'admin_countryCode',
+      label: '国际编码',
+      defaultValue: countryCodeOptions?.[0]?.value || '',
+    },
+    {
       component: 'Input',
       fieldName: 'admin_phone',
       label: '手机号',
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.mobileTip') })
+        // 根据不同国际编码调整正则表达式，这里以中国为例
+        .refine(async (v) => {
+          const { admin_countryCode } = await BaseFormApi.getValues();
+          console.log('Current admin_countryCode:', admin_countryCode);
+          const currentCountryCode = countryCodeOptions.find(
+            item => item.value === admin_countryCode
+          );
+          console.log('currentCountryCode', currentCountryCode)
+          if (currentCountryCode) {
+            return currentCountryCode.regex.test(v);
+          }
+          return false;
+        }, {
+          message: $t('authentication.mobileErrortip'),
+        }),
     },
     {
       component: 'VbenPinInput',
@@ -137,14 +191,16 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('formApi is not ready');
           }
+          
           await BaseFormApi.validateField('admin_phone');
           const isPhoneReady = await BaseFormApi.isFieldValid('admin_phone');
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { admin_phone } = await BaseFormApi.getValues();
-          await sendSmsApi(admin_phone);
+          const { admin_phone,admin_countryCode } = await BaseFormApi.getValues();
+          console.log('admin_phone', admin_phone,admin_countryCode)
+          await sendSmsApi(admin_phone,admin_countryCode);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
