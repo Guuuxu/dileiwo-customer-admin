@@ -179,7 +179,10 @@ const handleViewRow = (row: RowType) => {
 const handleSetData = (row: RowType, pageType: string) => {
   drawerApi
     .setData({
-      values: { ...row, pageType },
+      values: { ...row,  },
+    })
+    .setState({
+      title: pageType === 'add' ? '新增' : '编辑',
     })
     .open();
 };
