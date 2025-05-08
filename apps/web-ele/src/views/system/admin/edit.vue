@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { useVbenDrawer, VbenButton,z } from '@vben/common-ui';
+import { useVbenDrawer, VbenButton, z } from '@vben/common-ui';
 
 import { countryCodeOptions } from '#/views/dict';
 import { $t } from '@vben/locales';
-import { ElInput,ElMessage } from 'element-plus';
+import { ElInput, ElMessage } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
-import { addAdminUserApi,sendSmsApi } from '#/api'
+import { addAdminUserApi, sendSmsApi } from '#/api';
 // 定义自定义事件
 const emits = defineEmits(['onUpdated']);
 defineOptions({
@@ -15,7 +15,7 @@ defineOptions({
 
 const [BaseForm, BaseFormApi] = useVbenForm({
   schema: [
-  {
+    {
       component: 'Input',
       componentProps: {
         placeholder: '请输入',
@@ -54,29 +54,32 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       fieldName: 'phone',
       label: '手机号',
       rules: z
-              .string()
-              .min(1, { message: $t('authentication.mobileTip') })
-              // 根据不同国际编码调整正则表达式，这里以中国为例
-              .refine(async (v) => {
-                const { countryCode } = await BaseFormApi.getValues();
-                console.log('Current law_countryCode:', countryCode);
-                const currentCountryCode = countryCodeOptions.find(
-                  item => item.value === countryCode
-                );
-                console.log('currentCountryCode', currentCountryCode)
-                if (currentCountryCode) {
-                  return currentCountryCode.regex.test(v);
-                }
-                return false;
-              }, {
-                message: $t('authentication.mobileErrortip'),
-              }),
+        .string()
+        .min(1, { message: $t('authentication.mobileTip') })
+        // 根据不同国际编码调整正则表达式，这里以中国为例
+        .refine(
+          async (v) => {
+            const { countryCode } = await BaseFormApi.getValues();
+            console.log('Current law_countryCode:', countryCode);
+            const currentCountryCode = countryCodeOptions.find(
+              (item) => item.value === countryCode,
+            );
+            console.log('currentCountryCode', currentCountryCode);
+            if (currentCountryCode) {
+              return currentCountryCode.regex.test(v);
+            }
+            return false;
+          },
+          {
+            message: $t('authentication.mobileErrortip'),
+          },
+        ),
     },
     {
       component: 'Input',
       componentProps: {
         placeholder: '请输入',
-        type: 'number'
+        type: 'number',
       },
       fieldName: 'code',
       label: '验证码',
@@ -86,28 +89,27 @@ const [BaseForm, BaseFormApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const id = ref('')
+const id = ref('');
 const loading = ref(false);
 // 定义倒计时变量，初始值为 0
-const countdown = ref(0); 
+const countdown = ref(0);
 // 定义定时器变量
-let timer: NodeJS.Timeout | null = null; 
+let timer: NodeJS.Timeout | null = null;
 const [Drawer, drawerApi] = useVbenDrawer({
   onCancel() {
     drawerApi.close();
   },
   onConfirm: async () => {
-    const {valid} = await BaseFormApi.validate();
+    const { valid } = await BaseFormApi.validate();
     if (!valid) {
       return;
     }
     const params = await BaseFormApi.getValues();
     params.id = id.value;
-    console.log('25', params);
     await addAdminUserApi(params);
     ElMessage.success('操作成功');
-      // 触发自定义事件通知父组件
-      emits('onUpdated');
+    // 触发自定义事件通知父组件
+    emits('onUpdated');
     drawerApi.close();
   },
   onOpenChange(isOpen: boolean) {
@@ -117,8 +119,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
         id.value = values.id;
         BaseFormApi.setValues(values);
       }
-    }else{
+    } else {
       if (timer) {
+        countdown.value = 0;
         clearInterval(timer);
         timer = null;
       }
@@ -141,7 +144,7 @@ const handleSend = async () => {
     await sendSmsApi(params.phone, params.countryCode);
     ElMessage.success('已发送');
     // 设置倒计时时长，这里设为 60 秒
-    countdown.value = 60; 
+    countdown.value = 60;
     timer = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) {
@@ -162,9 +165,9 @@ const handleSend = async () => {
       <template #phone="slotProps">
         <ElInput v-bind="slotProps">
           <template #append>
-            <span 
-              class="cursor-pointer" 
-              @click="handleSend" 
+            <span
+              class="cursor-pointer"
+              @click="handleSend"
               :loading="loading"
               :disabled="countdown > 0"
             >
@@ -178,8 +181,8 @@ const handleSend = async () => {
 </template>
 <style lang="scss" scoped>
 .admin-form {
-  ::v-deep{
-    .el-input-group__append{
+  ::v-deep {
+    .el-input-group__append {
       color: #fff;
       background-color: #409eff;
     }
