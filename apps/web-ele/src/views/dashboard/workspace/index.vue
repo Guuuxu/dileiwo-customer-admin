@@ -1,11 +1,6 @@
-<script lang="ts" setup>
-import type {
-  WorkbenchProjectItem,
-  WorkbenchQuickNavItem,
-  WorkbenchTodoItem,
-  WorkbenchTrendItem,
-} from '@vben/common-ui';
 
+<script lang="ts" setup>
+  
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -80,54 +75,16 @@ const gridOptions: VxeGridProps<RowType> = {
 };
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 
-// 计算表格高度
-const calculateGridHeight = () => {
-  if (containerRef.value) {
-    const containerHeight = containerRef.value.offsetHeight;
-    // 减去顶部元素和卡片头部的高度
-    const newHeight = containerHeight - headerHeight.value - cardHeaderHeight.value - 150;
-    console.log(newHeight);
-    gridApi.setGridOptions({ height: newHeight });
-  }
-};
-
-// 存储 resize 事件的处理函数
-let resizeHandler: () => void;
-
 onMounted(async () => {
   const res = await getHomeData();
   console.log(res);
   homeData.value = res;
-  gridApi.setGridOptions({ data: res.bound_list });
-
-  // 获取顶部元素和卡片头部的高度
-  const headerElement = document.querySelector('.workbench-header');
-  const cardHeaderElement = document.querySelector('.el-card__header');
-  if (headerElement) headerHeight.value = headerElement.offsetHeight;
-  if (cardHeaderElement) cardHeaderHeight.value = cardHeaderElement.offsetHeight;
-
-  // 初始化计算表格高度
-  calculateGridHeight();
-
-  // 监听窗口大小变化
-  resizeHandler = () => {
-    calculateGridHeight();
-  };
-  window.addEventListener('resize', resizeHandler);
-});
-
-// 组件卸载时移除事件监听器
-onUnmounted(() => {
-  if (resizeHandler) {
-    window.removeEventListener('resize', resizeHandler);
-  }
-});
-
+  const height = window.innerHeight - 580;
+  gridApi.setGridOptions({ data: res.bound_list,height: height });
+})
 </script>
-
 <template>
-  <!-- 添加 ref 引用 -->
-  <div ref="containerRef" class="p-5 flex flex-col ">
+  <div class="p-5 flex flex-col ">
     <WorkbenchHeader
       :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar"
       class="workbench-header"
@@ -177,7 +134,6 @@ onUnmounted(() => {
         </el-card>
       </el-col>
     </el-row>
-
     <el-card class="mt-5">
       <template #header>
         <span class="text-lg font-semibold">包装租赁/购买详情</span>
@@ -185,6 +141,7 @@ onUnmounted(() => {
       <Grid class="h-full" />
     </el-card>
   </div>
+
 </template>
 <style lang="scss" scoped>
 .stats-row {
