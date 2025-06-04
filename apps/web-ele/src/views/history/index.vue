@@ -35,12 +35,13 @@ const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
     // { align: 'left', title: '', type: 'checkbox', width: 40 },
-    // { field: 'type_name', title: '型号' },
+    { field: 'type_name', title: '型号' },
     { field: 'detail_no', title: '包装编码', width: 150 },
     { field: 'month_limit', title: '总循环次数' },
     { field: 'limit_count', title: '单月已用' },
     { field: 'remain_count', title: '单月剩余用量' },
     { field: 'type', title: '类型', slots: { default: 'type' } },
+    { field: 'rent_deadline', title: '最后使⽤⽇' },
     { field: 'name', title: '客户' },
     { field: 'receive_address', title: '收件人地址' },
   ],
@@ -74,8 +75,13 @@ const formOptions: VbenFormProps = {
   fieldMappingTime: [['date', ['start', 'end']]],
   schema: [
     {
-      component: 'Select',
+      component: 'Input',
       fieldName: 'type_name',
+      label: '型号',
+    },
+    {
+      component: 'Select',
+      fieldName: 'type',
       label: '类型',
       componentProps: {
         options: [

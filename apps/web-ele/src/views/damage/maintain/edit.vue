@@ -51,6 +51,7 @@ const handleEnterInput = async () => {
   console.log('res', res);
   detail.value = res;
   ElMessage.success('操作完成！');
+  drawerApi.setState({ confirmText: '完成' });
   step.value = '1';
   BaseFormApi.setValues({
     ...formValues,
@@ -65,6 +66,7 @@ const [BaseForm2, BaseFormApi2] = useVbenForm({
 });
 
 const [Drawer, drawerApi] = useVbenDrawer({
+  confirmText: '下一步',
   onCancel() {
     drawerApi.close();
   },
@@ -107,6 +109,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       }
     } else {
       step.value = '0';
+      drawerApi.setState({ confirmText: '下一步' });
       BaseFormApi.setValues({
         code: '',
       });
