@@ -80,7 +80,7 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'Select',
-      fieldName: 'type',
+      fieldName: 'status',
       label: '类型',
       componentProps: {
         options: [
