@@ -41,7 +41,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'limit_count', title: '单月已用' },
     { field: 'remain_count', title: '单月剩余用量' },
     { field: 'type', title: '类型', slots: { default: 'type' } },
-    { field: 'rent_deadline', title: '最后使⽤⽇' },
+    { field: 'last_use', title: '最后使⽤⽇' },
     { field: 'name', title: '客户' },
     { field: 'receive_address', title: '收件人地址' },
   ],

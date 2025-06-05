@@ -44,8 +44,8 @@ export function getRepairDetail(id: string) {
  * @param id - 损坏记录的唯一标识
  * @returns
  */
-export function sendRepair(id) {
-  return requestClient.post(`/web/repair/send/${id}`);
+export function sendRepair({id,transfer_no}: {id: number,transfer_no: string}) {
+  return requestClient.post(`/web/repair/send/${id}`,{transfer_no});
 }
 
 /**

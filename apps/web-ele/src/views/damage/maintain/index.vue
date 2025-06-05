@@ -2,12 +2,12 @@
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { onMounted, ref } from 'vue';
+import { onMounted, ref,reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Page, useVbenDrawer } from '@vben/common-ui';
+import { Page, useVbenDrawer,useVbenModal } from '@vben/common-ui';
 
-import { ElButton, ElCard, ElMessage, ElTag, ElMessageBox } from 'element-plus';
+import { ElButton, ElInput, ElMessage, ElTag, ElMessageBox, ElForm, ElFormItem } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -20,6 +20,7 @@ import Edit from './edit.vue';
 const [Drawer, drawerApi] = useVbenDrawer({
   connectedComponent: Edit,
 });
+const [Modal, modalApi] = useVbenModal();
 
 const router = useRouter();
 
@@ -122,16 +123,35 @@ const handleSetData = (row: RowType, title: string) => {
 };
 
 const handleSendRow = (row: RowType) => {
-  ElMessageBox.confirm('是否确认寄出？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  }).then(async () => {
-    await sendRepair(row.id);
-    gridApi.reload();
-    ElMessage.success('操作成功');
-  });
+  modalApi.open()
+  // ElMessageBox.prompt('是否确认寄出？', '提示', {
+  //   confirmButtonText: '确定',
+  //   cancelButtonText: '取消',
+  //   type: 'warning',
+  // }).then(async () => {
+  //   await sendRepair(row.id);
+  //   gridApi.reload();
+  //   ElMessage.success('操作成功');
+  // });
 };
+const form = reactive({
+  transfer_no: '',
+})
+const tranForm = ref<InstanceType<typeof ElForm>>()
+const transfer_no = [
+  { required: true, message: '请输入运输单号', trigger: 'blur' },
+];
+const handleSendConfirm = () => {
+  tranForm.value?.validate(async (valid) => {
+    if (valid) {
+      await sendRepair({id: row.id,transfer_no: form.transfer_no});
+      gridApi.reload();
+      ElMessage.success('操作成功');
+      modalApi.close()
+    }
+  })
+  
+}
 
 const handleUpdate = () => {
   gridApi.reload();
@@ -157,5 +177,21 @@ const handleUpdate = () => {
     </Grid>
 
     <Drawer @onUpdated="handleUpdate" />
+    <Modal title="提示">
+      <template #default>
+        <div class="">
+          <h3>是否确认寄出？</h3>
+          <ElForm class="mt-5" :model="form" ref="tranForm">
+            <el-form-item label="运输单号" prop="transfer_no" :rules="transfer_no">
+              <ElInput placeholder="请输入" />
+            </el-form-item>
+          </ElForm>
+        </div>
+      </template>
+      <template #footer>
+        <ElButton type="primary" @click="modalApi.close">取消</ElButton>
+        <ElButton type="primary" @click="handleSendConfirm">确定</ElButton>
+      </template>
+    </Modal>
   </Page>
 </template>
