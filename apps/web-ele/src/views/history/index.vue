@@ -12,6 +12,7 @@ import { ElButton, ElMessage, ElMessageBox } from 'element-plus';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { $t } from '#/locales';
 import { getInventoryRecords, deleteDelivery } from '#/api';
+import { inventoryUseType } from '#/views/dict';
 
 import Edit from './edit.vue';
 
@@ -40,7 +41,14 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'month_limit', title: '总循环次数' },
     { field: 'limit_count', title: '单月已用' },
     { field: 'remain_count', title: '单月剩余用量' },
-    { field: 'type', title: '类型', slots: { default: 'type' } },
+    { field: 'status', title: '状态',
+      cellRender: {
+        name: 'CellSelectLabel',
+        props: {
+          options: inventoryUseType,
+        },
+      },
+     },
     { field: 'last_use', title: '最后使⽤⽇' },
     { field: 'name', title: '客户' },
     { field: 'receive_address', title: '收件人地址' },
@@ -80,15 +88,22 @@ const formOptions: VbenFormProps = {
       label: '型号',
     },
     {
+      component: 'Input',
+      fieldName: 'detail_no',
+      label: '包装编码',
+    },
+    {
+      component: 'Input',
+      fieldName: 'client',
+      label: '客户',
+    },
+    {
       component: 'Select',
       fieldName: 'status',
-      label: '类型',
+      label: '状态',
       componentProps: {
-        options: [
-          { label: '回收', value: '1' },
-          { label: '损坏', value: '2' },
-          { label: '出库', value: '3' },
-        ],
+        clearable: true,
+        options: inventoryUseType,
       },
     },
   ],

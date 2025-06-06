@@ -2,12 +2,20 @@
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { onMounted, ref,reactive } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Page, useVbenDrawer,useVbenModal } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 
-import { ElButton, ElInput, ElMessage, ElTag, ElMessageBox, ElForm, ElFormItem } from 'element-plus';
+import {
+  ElButton,
+  ElInput,
+  ElMessage,
+  ElTag,
+  ElMessageBox,
+  ElForm,
+  ElFormItem,
+} from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -122,8 +130,11 @@ const handleSetData = (row: RowType, title: string) => {
     .open();
 };
 
+// 当前选择行
+const currentRow = ref<RowType>({});
 const handleSendRow = (row: RowType) => {
-  modalApi.open()
+  modalApi.open();
+  currentRow.value = row;
   // ElMessageBox.prompt('是否确认寄出？', '提示', {
   //   confirmButtonText: '确定',
   //   cancelButtonText: '取消',
@@ -136,26 +147,25 @@ const handleSendRow = (row: RowType) => {
 };
 const form = reactive({
   transfer_no: '',
-})
-const tranForm = ref<InstanceType<typeof ElForm>>()
+});
+const tranForm = ref<InstanceType<typeof ElForm>>();
 const transfer_no = [
   { required: true, message: '请输入运输单号', trigger: 'blur' },
 ];
 const handleSendConfirm = () => {
   tranForm.value?.validate(async (valid) => {
     if (valid) {
-      await sendRepair({id: row.id,transfer_no: form.transfer_no});
+      await sendRepair({ id: currentRow.value.id, transfer_no: form.transfer_no });
       gridApi.reload();
       ElMessage.success('操作成功');
-      modalApi.close()
+      modalApi.close();
     }
-  })
-  
-}
+  });
+};
 
 const handleUpdate = () => {
   gridApi.reload();
-}
+};
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
@@ -182,8 +192,12 @@ const handleUpdate = () => {
         <div class="">
           <h3>是否确认寄出？</h3>
           <ElForm class="mt-5" :model="form" ref="tranForm">
-            <el-form-item label="运输单号" prop="transfer_no" :rules="transfer_no">
-              <ElInput placeholder="请输入" />
+            <el-form-item
+              label="运输单号"
+              prop="transfer_no"
+              :rules="transfer_no"
+            >
+              <ElInput placeholder="请输入" v-model="form.transfer_no" />
             </el-form-item>
           </ElForm>
         </div>
