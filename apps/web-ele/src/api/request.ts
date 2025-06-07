@@ -112,8 +112,8 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
         updatePreferences({ app: { loginExpiredMode: 'page' } });
         // await getMockStatusApi('401');
         updatePreferences({ app: { loginExpiredMode } });
-        // router.replace({ path: '/auth/code-login', query: { redirect: router.currentRoute.value.fullPath } });
-        router.replace({ path: '/auth/login', query: {} });
+        router.replace({ path: '/auth/code-login',  });
+        // router.replace({ path: '/auth/login', query: {} });
       }
     }),
   );
