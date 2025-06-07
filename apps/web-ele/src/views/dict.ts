@@ -66,4 +66,5 @@ export const inventoryUseType = [
   { label: '回收', value: 2 },
   { label: '损坏', value: 3 },
   { label: '已认证', value: 4 },
+  { label: '已收回', value: 5 },
 ];

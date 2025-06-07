@@ -49,7 +49,7 @@ const gridOptions: VxeGridProps<RowType> = {
         },
       },
      },
-    { field: 'last_use', title: '最后使⽤⽇' },
+    { field: 'last_use', title: '最后使⽤⽇',width: 160 },
     { field: 'name', title: '客户' },
     { field: 'receive_address', title: '收件人地址' },
   ],
