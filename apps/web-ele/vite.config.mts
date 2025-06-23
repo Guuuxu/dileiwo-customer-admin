@@ -17,7 +17,7 @@ export default defineConfig(async () => {
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api/, ''),
             // mock代理目标地址
-            target: 'http://dileiwo-api.test.muke.design',
+            target: 'http://api.deravel.com.cn',
             ws: true,
           },
         },

@@ -8,6 +8,7 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getDeliveryDetails } from '#/api';
+import { inventoryUseType } from '#/views/dict';
 
 defineOptions({
   name: 'FormDrawer',
@@ -59,13 +60,10 @@ const gridOptions: VxeGridProps<RowType> = {
       field: 'status',
       title: '状态',
       width: 60,
-      slots: {
-        default: ({ row }) => {
-          return row.status == 1
-            ? '已回收'
-            : row.status == 2
-              ? '已损坏'
-              : '已出库';
+      cellRender: {
+        name: 'CellSelectLabel',
+        props: {
+          options: inventoryUseType,
         },
       },
     },
