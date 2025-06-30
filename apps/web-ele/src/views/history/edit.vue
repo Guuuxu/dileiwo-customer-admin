@@ -10,6 +10,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 
 import { useSchema } from './data';
 import { getDeliveryDetails } from '#/api';
+import { inventoryUseType } from '#/views/dict';
 
 defineOptions({
   name: 'FormDrawer',
@@ -66,9 +67,10 @@ const gridOptions: VxeGridProps<RowType> = {
       field: 'status',
       title: '状态',
       width: 60,
-      slots: {
-        default: ({ row }) => {
-          return row.status == '1' ? '出库' : '回收';
+      cellRender: {
+        name: 'CellSelectLabel',
+        props: {
+          options: inventoryUseType,
         },
       },
     },

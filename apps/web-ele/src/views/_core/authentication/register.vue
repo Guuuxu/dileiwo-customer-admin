@@ -10,7 +10,7 @@ import { Plus } from '@vben/icons';
 import { AuthenticationRegister, z } from '@vben/common-ui';
 import { handleRegister, sendSmsApi } from '#/api';
 import { $t } from '@vben/locales';
-import { countryCodeOptions } from '#/views/dict'
+import { countryCodeOptions } from '#/views/dict';
 const router = useRouter();
 defineOptions({ name: 'Register' });
 
@@ -70,20 +70,23 @@ const formSchema = computed((): VbenFormSchema[] => {
         .string()
         .min(1, { message: $t('authentication.mobileTip') })
         // 根据不同国际编码调整正则表达式，这里以中国为例
-        .refine(async (v) => {
-          const { law_countryCode } = await BaseFormApi.getValues();
-          console.log('Current law_countryCode:', law_countryCode);
-          const currentCountryCode = countryCodeOptions.find(
-            item => item.value === law_countryCode
-          );
-          console.log('currentCountryCode', currentCountryCode)
-          if (currentCountryCode) {
-            return currentCountryCode.regex.test(v);
-          }
-          return false;
-        }, {
-          message: $t('authentication.mobileErrortip'),
-        }),
+        .refine(
+          async (v) => {
+            const { law_countryCode } = await BaseFormApi.getValues();
+            console.log('Current law_countryCode:', law_countryCode);
+            const currentCountryCode = countryCodeOptions.find(
+              (item) => item.value === law_countryCode,
+            );
+            console.log('currentCountryCode', currentCountryCode);
+            if (currentCountryCode) {
+              return currentCountryCode.regex.test(v);
+            }
+            return false;
+          },
+          {
+            message: $t('authentication.mobileErrortip'),
+          },
+        ),
     },
     {
       component: 'VbenPinInput',
@@ -110,8 +113,8 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { law_phone,law_countryCode } = await BaseFormApi.getValues();
-          await sendSmsApi(law_phone,law_countryCode);
+          const { law_phone, law_countryCode } = await BaseFormApi.getValues();
+          await sendSmsApi(law_phone, law_countryCode);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
@@ -138,7 +141,6 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {},
       fieldName: 'admin_person',
       label: '管理员姓名',
-      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
     },
     {
       component: 'VbenSelect',
@@ -153,24 +155,6 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'Input',
       fieldName: 'admin_phone',
       label: '手机号',
-      rules: z
-        .string()
-        .min(1, { message: $t('authentication.mobileTip') })
-        // 根据不同国际编码调整正则表达式，这里以中国为例
-        .refine(async (v) => {
-          const { admin_countryCode } = await BaseFormApi.getValues();
-          console.log('Current admin_countryCode:', admin_countryCode);
-          const currentCountryCode = countryCodeOptions.find(
-            item => item.value === admin_countryCode
-          );
-          console.log('currentCountryCode', currentCountryCode)
-          if (currentCountryCode) {
-            return currentCountryCode.regex.test(v);
-          }
-          return false;
-        }, {
-          message: $t('authentication.mobileErrortip'),
-        }),
     },
     {
       component: 'VbenPinInput',
@@ -191,25 +175,23 @@ const formSchema = computed((): VbenFormSchema[] => {
             loading.value = false;
             throw new Error('formApi is not ready');
           }
-          
+
           await BaseFormApi.validateField('admin_phone');
           const isPhoneReady = await BaseFormApi.isFieldValid('admin_phone');
           if (!isPhoneReady) {
             loading.value = false;
             throw new Error('Phone number is not Ready');
           }
-          const { admin_phone,admin_countryCode } = await BaseFormApi.getValues();
-          console.log('admin_phone', admin_phone,admin_countryCode)
-          await sendSmsApi(admin_phone,admin_countryCode);
+          const { admin_phone, admin_countryCode } =
+            await BaseFormApi.getValues();
+          console.log('admin_phone', admin_phone, admin_countryCode);
+          await sendSmsApi(admin_phone, admin_countryCode);
           loading.value = false;
         },
         placeholder: $t('authentication.code'),
       },
       fieldName: 'admin_code',
       label: $t('authentication.code'),
-      rules: z.string().length(CODE_LENGTH, {
-        message: $t('authentication.codeTip', [CODE_LENGTH]),
-      }),
     },
     {
       component: 'Divider',
@@ -227,7 +209,6 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {},
       fieldName: 'receive_person',
       label: '收货人姓名',
-      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
     },
     {
       component: 'Input',
@@ -292,13 +273,14 @@ const handleAvatarError = (error: any) => {
   ElMessage.error('上传失败');
 };
 async function handleSubmit(value: Recordable<any>) {
-  const values = await BaseFormApi.getValues();
-  console.log('BaseFormApi:', BaseFormApi);
-  console.log('register submit:', values);
-  handleRegister(values).then((res: any) => {
-    ElMessage.success('注册成功');
-    router.replace('/');
-  });
+  const { valid } = await BaseFormApi.validate();
+  if (valid) {
+    const values = await BaseFormApi.getValues();
+    handleRegister(values).then((res: any) => {
+      ElMessage.success('注册成功');
+      router.replace('/');
+    });
+  }
 }
 const goToLogin = () => {
   router.push('/auth/code-login');

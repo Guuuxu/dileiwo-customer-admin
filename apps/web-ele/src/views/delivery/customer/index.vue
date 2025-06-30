@@ -132,9 +132,7 @@ const handleDeleteRow = (row: RowType) => {
       ElMessage.success('删除成功');
       gridApi.query();
     })
-    .catch(() => {
-      ElMessage.info('已取消删除');
-    });
+    .catch(() => {});
 };
 const handleUpdate = () => {
   gridApi.reload();
