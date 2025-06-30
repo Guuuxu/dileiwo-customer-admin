@@ -46,5 +46,4 @@ html .el-loading-mask {
 /* 自定义文字提示框 */
 .vxe-table--tooltip,.vxe-table--tooltip-wrapper {
   max-height: 400px;
-  overflow: auto;
 }
