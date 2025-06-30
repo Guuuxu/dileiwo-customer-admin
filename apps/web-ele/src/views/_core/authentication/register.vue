@@ -192,7 +192,6 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
       fieldName: 'admin_code',
       label: $t('authentication.code'),
-      
     },
     {
       component: 'Divider',
@@ -263,27 +262,25 @@ const beforeUpload = (file: any) => {
 const handleAvatarSuccess = async (response: any) => {
   ElMessage.success('上传成功');
   if (response.data && response.data.url) {
-    const { valid } = await BaseFormApi.validate();
-    if (valid) {
-      const values = await BaseFormApi.getValues();
-      BaseFormApi?.setValues({
-        ...values,
-        img: response.data.url,
-      });
-    }
+    const values = await BaseFormApi.getValues();
+    BaseFormApi?.setValues({
+      ...values,
+      img: response.data.url,
+    });
   }
 };
 const handleAvatarError = (error: any) => {
   ElMessage.error('上传失败');
 };
 async function handleSubmit(value: Recordable<any>) {
-  const values = await BaseFormApi.getValues();
-  console.log('BaseFormApi:', BaseFormApi);
-  console.log('register submit:', values);
-  handleRegister(values).then((res: any) => {
-    ElMessage.success('注册成功');
-    router.replace('/');
-  });
+  const { valid } = await BaseFormApi.validate();
+  if (valid) {
+    const values = await BaseFormApi.getValues();
+    handleRegister(values).then((res: any) => {
+      ElMessage.success('注册成功');
+      router.replace('/');
+    });
+  }
 }
 const goToLogin = () => {
   router.push('/auth/code-login');

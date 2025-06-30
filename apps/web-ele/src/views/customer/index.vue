@@ -140,7 +140,7 @@ const handleDeleteRow = (row: RowType) => {
     // }
     ElMessage.success('删除成功');
   }).catch(() => {
-    ElMessage.info('已取消删除');
+
   });
 };
 
