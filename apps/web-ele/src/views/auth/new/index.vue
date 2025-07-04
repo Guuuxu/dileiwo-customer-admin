@@ -21,36 +21,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const router = useRouter();
-const [Form, formApi] = useVbenForm({
-  commonConfig: {
-    // 所有表单项
-    componentProps: {
-      class: 'w-full',
-    },
-  },
-  layout: 'horizontal',
-  resetButtonOptions: { show: false },
-  submitButtonOptions: { show: false },
-  // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
-  wrapperClass: 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4',
-  handleSubmit: (values) => {
-    ElMessage.success(`表单数据：${JSON.stringify(values)}`);
-  },
-  schema: [
-    {
-      component: 'Input',
-      fieldName: 'type_name',
-      label: '型号',
-    },
-  ],
-});
-
-function handleSearch() {
-  formApi.getValues();
-}
-function handleReset() {
-  formApi.resetForm();
-}
 
 // 表格配置
 interface RowType {
@@ -63,7 +33,7 @@ interface RowType {
 const dataList: any = ref([]);
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
-    { field: 'order_no', title: '型号' },
+    { field: 'order_no', title: '单号' },
     { field: 'total_count', title: '数量' },
     { field: 'created_at', title: '出货日期' },
     { field: 'remark', title: '备注' },
@@ -90,7 +60,7 @@ const gridOptions: VxeGridProps<RowType> = {
   pagerConfig: {},
   proxyConfig: {
     ajax: {
-      query: async ({ page },formValues) => {
+      query: async ({ page }, formValues) => {
         return await getAuthNewListApi({
           page: page.currentPage,
           per_page: page.pageSize,
@@ -108,7 +78,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'type',
-      label: '型号',
+      label: '单号',
     },
   ],
   // 控制表单是否显示折叠按钮
@@ -119,7 +89,6 @@ const formOptions: VbenFormProps = {
   submitOnEnter: false,
 };
 const [Grid, gridApi] = useVbenVxeGrid({ formOptions, gridOptions });
-
 
 // 编辑
 function handleEditRow(row: RowType) {
@@ -141,10 +110,9 @@ const handleSetData = (row: RowType, title: string) => {
     .open();
 };
 
-const handleUpdate = ()=>{
+const handleUpdate = () => {
   gridApi.reload();
-}
-
+};
 </script>
 <template>
   <Page auto-content-height :title="$t(router.currentRoute.value.meta.title)">
