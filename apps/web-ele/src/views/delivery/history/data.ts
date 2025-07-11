@@ -15,6 +15,7 @@ export function useSchema(): VbenFormSchema[] {
       component: 'ApiSelect',
       // 对应组件的参数
       componentProps: {
+        filterable: true,
         // 客户接口转options格式
         afterFetch: (data: { list: any[]; }) => {
           console.log(data)
@@ -22,6 +23,10 @@ export function useSchema(): VbenFormSchema[] {
             label: item.name,
             value: item.id,
           }));
+        },
+        params: {
+          page: 1,
+          page_size: 100,
         },
         // 客户接口
         api: getCustomerList,
