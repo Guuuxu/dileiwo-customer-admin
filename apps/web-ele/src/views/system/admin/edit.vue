@@ -29,6 +29,7 @@ const [BaseForm, BaseFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请选择',
         options: [
+          { label: '总管员', value: 0 },
           { label: '管理员', value: 1 },
           { label: '操作员', value: 2 },
         ],
