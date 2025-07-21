@@ -21,6 +21,7 @@ export const yesOrNoOption: any = [
 ];
 
 export const roleOptions = [
+  { label: '总管员', value: 0 },
   { label: '管理员', value: 1 },
   { label: '操作员', value: 2 },
   { label: '法人', value: 3 },

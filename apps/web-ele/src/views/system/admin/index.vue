@@ -81,9 +81,9 @@ const gridOptions: VxeGridProps<RowType> = {
         name: 'CellSelectLabel',
         props: {
           options: [
+            { label: '总管员', value: 0 },
             { label: '管理员', value: 1 },
             { label: '操作员', value: 2 },
-            { label: '代工厂', value: 3 },
           ],
         },
       },
@@ -139,6 +139,7 @@ const formOptions: VbenFormProps = {
       label: '角色',
       componentProps: {
         options: [
+          { label: '总管员', value: 0 },
           { label: '管理员', value: 1 },
           { label: '操作员', value: 2 },
         ],
